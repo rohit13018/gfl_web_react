@@ -1,0 +1,10 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@inoxgfl.com",
+      "password": "Admin@123"
+    }
+  ]
+}
