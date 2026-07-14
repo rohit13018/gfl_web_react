@@ -6,12 +6,12 @@ import Validator from '../../components/common/Validator/Validator'
 import Button from '../../components/common/Button/Button'
 import useAuth from '../../hooks/useAuth'
 import { ROUTES } from '../../utils/constants'
-import backgroundImg from '../../assets/background.png'
 import userLockIcon from '../../assets/icons/user-lock.png'
 import gflLogo from '../../assets/logos/gfl.png'
 import gfclLogo from '../../assets/logos/gfcl.png'
 import inoxgflLogo from '../../assets/logos/inoxgfl.png'
 import { theme, mq } from '../../styles/theme'
+import { pageBackground } from '../../styles/backgroundStyles'
 
 const INITIAL_FORM = { email: '', password: '' }
 
@@ -23,7 +23,8 @@ const Page = styled.div`
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  background: url(${backgroundImg}) no-repeat center center / cover, ${theme.colors.pageBg};
+  background: ${theme.colors.pageBg};
+  ${pageBackground}
 
   ${mq('laptop')} {
     flex-direction: row;

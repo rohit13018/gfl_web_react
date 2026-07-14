@@ -15,6 +15,7 @@ export const theme = {
     text: '#111827',
     textMuted: '#6b7280',
     heroTextMuted: 'rgba(255, 255, 255, 0.75)',
+    tableHeader: '#1B5FA8',
   },
   radii: {
     sm: '6px',

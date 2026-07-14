@@ -37,6 +37,13 @@ const StyledButton = styled('button', {
       color: ${theme.colors.text};
     `}
 
+  ${(props) =>
+    props.variant === 'danger' &&
+    `
+      background: ${theme.colors.danger};
+      color: #fff;
+    `}
+
   &:disabled {
     cursor: not-allowed;
     opacity: 0.7;
@@ -62,7 +69,7 @@ const Button = ({
 
 Button.propTypes = {
   type: PropTypes.oneOf(['button', 'submit', 'reset']),
-  variant: PropTypes.oneOf(['secondary', 'gradient']),
+  variant: PropTypes.oneOf(['secondary', 'gradient', 'danger']),
   isLoading: PropTypes.bool,
   disabled: PropTypes.bool,
   children: PropTypes.node,
