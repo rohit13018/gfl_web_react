@@ -1,7 +1,9 @@
 import styled from '@emotion/styled'
+import IconButton from '@mui/material/IconButton'
 import useAuth from '../../../hooks/useAuth'
-import Button from '../Button/Button'
 import logo from '../../../assets/logos/inoxgfl.png'
+import logoutIcon from '../../../assets/icons/logout.png'
+import userIcon from '../../../assets/icons/user 1.svg'
 import { theme, mq } from '../../../styles/theme'
 
 const Bar = styled.header`
@@ -39,14 +41,36 @@ const UserArea = styled.div`
   gap: ${theme.spacing.sm};
 `
 
-const Greeting = styled.span`
+const NameBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+`
+
+const UserName = styled.span`
   font-size: 14px;
-  color: ${theme.colors.textMuted};
-  white-space: nowrap;
+  font-weight: 600;
+  color: ${theme.colors.text};
 
   ${mq('tablet')} {
     font-size: 15px;
   }
+`
+
+const UserSubtext = styled.span`
+  font-size: 12px;
+  color: ${theme.colors.textMuted};
+`
+
+const AvatarBadge = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: ${theme.colors.surfaceMuted};
+  flex-shrink: 0;
 `
 
 const Header = () => {
@@ -56,10 +80,16 @@ const Header = () => {
     <Bar>
       <Logo src={logo} alt="Company logo" />
       <UserArea>
-        <Greeting>Hello, {user?.name}</Greeting>
-        <Button variant="secondary" onClick={logout}>
-          Logout
-        </Button>
+        <AvatarBadge>
+          <img src={userIcon} alt="" width={18} height={18} />
+        </AvatarBadge>
+        <NameBlock>
+          <UserName>{user?.name || 'Admin'}</UserName>
+          {user?.email && <UserSubtext>{user.email}</UserSubtext>}
+        </NameBlock>
+        <IconButton aria-label="Log out" size="small" onClick={logout}>
+          <img src={logoutIcon} alt="" width={20} height={20} />
+        </IconButton>
       </UserArea>
     </Bar>
   )

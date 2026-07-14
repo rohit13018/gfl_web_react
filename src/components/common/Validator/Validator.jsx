@@ -11,6 +11,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import NumberField from './NumberField'
+import { theme } from '../../../styles/theme'
 
 const checkboxIcon = <CheckBoxOutlineBlankIcon fontSize="small" />
 const checkboxCheckedIcon = <CheckBoxIcon fontSize="small" />
@@ -22,7 +23,11 @@ const isEmpty = (value) => {
 }
 
 const leftAlignInput = { style: { textAlign: 'left' } }
-const leftAlignSelectSx = { '& .MuiSelect-select': { textAlign: 'left' } }
+const whiteFieldSx = { backgroundColor: theme.colors.surface }
+const leftAlignSelectSx = {
+  '& .MuiSelect-select': { textAlign: 'left' },
+  ...whiteFieldSx,
+}
 
 const PATTERNS = {
   email: {
@@ -77,6 +82,7 @@ const Validator = forwardRef(function Validator(
     validateOnChange = false,
     onErrorChange,
     slotProps: slotPropsOverride,
+    sx: sxOverride,
     ...props
   },
   ref
@@ -134,9 +140,9 @@ const Validator = forwardRef(function Validator(
         }}
         onBlur={handleBlur}
         error={Boolean(displayError)}
-        helperText={displayError || ' '}
+        helperText={displayError || undefined}
         fullWidth
-        sx={leftAlignSelectSx}
+        sx={{ ...leftAlignSelectSx, ...sxOverride }}
         {...props}
       >
         {options.map((option) => (
@@ -196,14 +202,16 @@ const Validator = forwardRef(function Validator(
             placeholder={placeholder}
             required={required}
             error={Boolean(displayError)}
-            helperText={displayError || ' '}
+            helperText={displayError || undefined}
             slotProps={{
               ...params.slotProps,
               htmlInput: { ...params.slotProps?.htmlInput, ...leftAlignInput },
             }}
+            sx={whiteFieldSx}
           />
         )}
         fullWidth
+        sx={sxOverride}
         {...props}
       />
     )
@@ -226,7 +234,7 @@ const Validator = forwardRef(function Validator(
         }}
         onBlur={handleBlur}
         error={Boolean(displayError)}
-        helperText={displayError || ' '}
+        helperText={displayError || undefined}
         {...props}
       />
     )
@@ -247,7 +255,7 @@ const Validator = forwardRef(function Validator(
         }}
         onBlur={handleBlur}
         error={Boolean(displayError)}
-        helperText={displayError || ' '}
+        helperText={displayError || undefined}
         fullWidth
         slotProps={{
           ...slotPropsOverride,
@@ -273,6 +281,7 @@ const Validator = forwardRef(function Validator(
             ...slotPropsOverride?.input,
           },
         }}
+        sx={{ ...whiteFieldSx, ...sxOverride }}
         {...props}
       />
     )
@@ -294,13 +303,14 @@ const Validator = forwardRef(function Validator(
       }}
       onBlur={handleBlur}
       error={Boolean(displayError)}
-      helperText={displayError || ' '}
+      helperText={displayError || undefined}
       fullWidth
       slotProps={{
         ...slotPropsOverride,
         inputLabel: inputLabelSlotProps,
         htmlInput: { ...leftAlignInput, ...slotPropsOverride?.htmlInput },
       }}
+      sx={{ ...whiteFieldSx, ...sxOverride }}
       {...props}
     />
   )
