@@ -23,7 +23,15 @@ const isEmpty = (value) => {
 }
 
 const leftAlignInput = { style: { textAlign: 'left' } }
-const whiteFieldSx = { backgroundColor: theme.colors.surface }
+const whiteFieldSx = {
+  '& .MuiInputBase-root': { backgroundColor: theme.colors.surface },
+  '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active':
+    {
+      WebkitBoxShadow: `0 0 0 1000px ${theme.colors.surface} inset`,
+      WebkitTextFillColor: theme.colors.text,
+      caretColor: theme.colors.text,
+    },
+}
 const leftAlignSelectSx = {
   '& .MuiSelect-select': { textAlign: 'left' },
   ...whiteFieldSx,
@@ -48,7 +56,7 @@ const PATTERNS = {
   },
 }
 
-const runValidation = (value, type, required, min, max, numberField) => {
+const runValidation = (value, type, required, min, max, numberField, validatePattern) => {
   if (required && isEmpty(value)) return 'This field is required'
   if (!isEmpty(value)) {
     if (numberField) {
@@ -56,7 +64,7 @@ const runValidation = (value, type, required, min, max, numberField) => {
       if (min !== undefined && num < min) return `Must be at least ${min}`
       if (max !== undefined && num > max) return `Must be at most ${max}`
     }
-    const pattern = PATTERNS[type]
+    const pattern = validatePattern ? PATTERNS[type] : undefined
     if (pattern && !pattern.value.test(value)) return pattern.message
   }
   return ''
@@ -80,6 +88,7 @@ const Validator = forwardRef(function Validator(
     min,
     max,
     defaultValue,
+    validatePattern = true,
     validateOnChange = false,
     onErrorChange,
     slotProps: slotPropsOverride,
@@ -94,13 +103,13 @@ const Validator = forwardRef(function Validator(
 
   const validate = useCallback(
     (nextValue = value) => {
-      const message = runValidation(nextValue, type, required, min, max, numberField)
+      const message = runValidation(nextValue, type, required, min, max, numberField, validatePattern)
       setTouched(true)
       setError(message)
       onErrorChange?.(message)
       return message === ''
     },
-    [value, type, required, min, max, numberField, onErrorChange]
+    [value, type, required, min, max, numberField, validatePattern, onErrorChange]
   )
 
   useImperativeHandle(ref, () => ({
@@ -341,6 +350,7 @@ Validator.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
   defaultValue: PropTypes.any,
+  validatePattern: PropTypes.bool,
   validateOnChange: PropTypes.bool,
   onErrorChange: PropTypes.func,
 }

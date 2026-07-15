@@ -259,7 +259,7 @@ const Login = () => {
     <Page>
       <FormPanel>
         <FormCenter>
-          <FormCard onSubmit={handleSubmit} noValidate>
+          <FormCard onSubmit={handleSubmit} noValidate autoComplete="off">
             <IconBadge src={userLockIcon} alt="" />
             <Title>Login into account</Title>
             <Subtitle>Enter your email and password to access your account.</Subtitle>
@@ -275,6 +275,7 @@ const Login = () => {
                 variant="outlined"
                 name="email"
                 required
+                autoComplete="off"
                 value={formValues.email}
                 onChange={handleChange('email')}
                 sx={fieldSx}
@@ -289,6 +290,8 @@ const Login = () => {
                 name="password"
                 placeholder="Enter your password"
                 required
+                validatePattern={false}
+                autoComplete="new-password"
                 value={formValues.password}
                 onChange={handleChange('password')}
                 sx={fieldSx}
