@@ -2,7 +2,9 @@ import { createElement } from 'react'
 import StatusChip from '../components/Dashboard/StatusChip'
 import RowActions from '../components/Dashboard/RowActions'
 
-export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
+const formatValueList = (value) => (Array.isArray(value) ? value.join(', ') : value)
+
+export const getDashboardColumns = ({ onView, onEdit }) => [
   {
     field: 'email',
     headerName: 'User Email',
@@ -16,6 +18,7 @@ export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
     flex: 1,
     minWidth: 130,
     sortable: true,
+    valueFormatter: formatValueList,
   },
   {
     field: 'company',
@@ -23,7 +26,7 @@ export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
     flex: 1.3,
     minWidth: 160,
     sortable: true,
-    valueFormatter: (value) => (Array.isArray(value) ? value.join(', ') : value),
+    valueFormatter: formatValueList,
   },
   {
     field: 'location',
@@ -31,6 +34,7 @@ export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
     flex: 0.9,
     minWidth: 110,
     sortable: true,
+    valueFormatter: formatValueList,
   },
   {
     field: 'plant',
@@ -38,6 +42,7 @@ export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
     flex: 0.9,
     minWidth: 110,
     sortable: true,
+    valueFormatter: formatValueList,
   },
   {
     field: 'persona',
@@ -45,6 +50,7 @@ export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
     flex: 1.2,
     minWidth: 150,
     sortable: true,
+    valueFormatter: formatValueList,
   },
   {
     field: 'status',
@@ -64,6 +70,6 @@ export const getDashboardColumns = ({ onView, onEdit, onDelete }) => [
     disableColumnMenu: true,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => createElement(RowActions, { row: params.row, onView, onEdit, onDelete }),
+    renderCell: (params) => createElement(RowActions, { row: params.row, onView, onEdit }),
   },
 ]

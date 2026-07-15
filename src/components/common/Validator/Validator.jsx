@@ -74,6 +74,7 @@ const Validator = forwardRef(function Validator(
     name,
     placeholder,
     required = false,
+    readOnly = false,
     errorText,
     options = [],
     min,
@@ -142,6 +143,7 @@ const Validator = forwardRef(function Validator(
         error={Boolean(displayError)}
         helperText={displayError || undefined}
         fullWidth
+        slotProps={{ input: { readOnly } }}
         sx={{ ...leftAlignSelectSx, ...sxOverride }}
         {...props}
       >
@@ -159,6 +161,7 @@ const Validator = forwardRef(function Validator(
       <Autocomplete
         multiple
         disableCloseOnSelect
+        readOnly={readOnly}
         options={options}
         value={value ?? []}
         getOptionLabel={(option) => option.label ?? ''}
@@ -308,7 +311,7 @@ const Validator = forwardRef(function Validator(
       slotProps={{
         ...slotPropsOverride,
         inputLabel: inputLabelSlotProps,
-        htmlInput: { ...leftAlignInput, ...slotPropsOverride?.htmlInput },
+        htmlInput: { ...leftAlignInput, readOnly, ...slotPropsOverride?.htmlInput },
       }}
       sx={{ ...whiteFieldSx, ...sxOverride }}
       {...props}
@@ -327,6 +330,7 @@ Validator.propTypes = {
   name: PropTypes.string,
   placeholder: PropTypes.string,
   required: PropTypes.bool,
+  readOnly: PropTypes.bool,
   errorText: PropTypes.string,
   options: PropTypes.arrayOf(
     PropTypes.shape({

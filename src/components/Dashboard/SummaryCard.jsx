@@ -3,19 +3,37 @@ import PropTypes from 'prop-types'
 import { theme, mq } from '../../styles/theme'
 import vectorBg from '../../assets/Vector.png'
 
-const Card = styled.div`
+const Card = styled.button`
   position: relative;
   overflow: hidden;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
   border-radius: ${theme.radii.md};
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   min-height: 78px;
   color: #fff;
   background: ${(props) => props.gradient};
-  box-shadow: ${theme.shadow};
+  box-shadow: ${(props) =>
+    props.isSelected
+      ? `0 0 0 2px ${theme.colors.surface}, 0 0 0 4px ${theme.colors.tableHeader}, ${theme.shadow}`
+      : theme.shadow};
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: ${theme.spacing.sm};
+  transition: transform ${theme.transitionFast}, box-shadow ${theme.transitionFast};
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${theme.colors.navy};
+    outline-offset: 2px;
+  }
 
   ${mq('tablet')} {
     padding: ${theme.spacing.md};
@@ -75,8 +93,8 @@ const IconImg = styled.img`
   }
 `
 
-const SummaryCard = ({ label, value, gradient, icon }) => (
-  <Card gradient={gradient}>
+const SummaryCard = ({ label, value, gradient, icon, isSelected, onClick }) => (
+  <Card type="button" gradient={gradient} isSelected={isSelected} aria-pressed={isSelected} onClick={onClick}>
     <VectorImg src={vectorBg} alt="" />
     <TextBlock>
       <Label>{label}</Label>
@@ -91,6 +109,8 @@ SummaryCard.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   gradient: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
+  isSelected: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
 }
 
 export default SummaryCard

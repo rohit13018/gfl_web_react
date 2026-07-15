@@ -15,30 +15,11 @@
         "GFCL EV - Jolva"
       ],
       "location": "Dahej",
-      "plant": "DHJ Plant",
+      "plant": "EV Plant",
       "persona": "CHRO",
       "status": "Inactive",
       "isNew": false,
       "createdAt": "2026-04-11T00:00:00.000Z"
-    },
-    {
-      "id": 4,
-      "name": "Rahul Verma",
-      "email": "rahul.verma@gfl.co.in",
-      "business": "Polymer",
-      "company": [
-        "GFCL EV - Jolva",
-        [
-          "GFL Solar & Green Hydrogen",
-          "GFCL EV - Jolva"
-        ]
-      ],
-      "location": "Vadodara",
-      "plant": "EV Plant",
-      "persona": "CMO",
-      "status": "Active",
-      "isNew": false,
-      "createdAt": "2026-01-22T00:00:00.000Z"
     },
     {
       "id": 6,
@@ -1321,6 +1302,39 @@
       "persona": "CHRO",
       "status": "Inactive",
       "id": 104
+    },
+    {
+      "email": "maheswarduppatla1@gmail.com",
+      "business": [
+        "EV",
+        "Polymer",
+        "Refrigerant Gases",
+        "Chemical"
+      ],
+      "company": [
+        "GFL Solar & Green Hydrogen",
+        "GFCL EV - Jolva",
+        "GFCL EV LLC",
+        "Gujarat Fluorochemicals"
+      ],
+      "location": [
+        "Dahej",
+        "Vadodara"
+      ],
+      "plant": [
+        "EV Jolva",
+        "JOL Plant",
+        "DHJ Plant",
+        "EV Plant",
+        "RNJ Plant"
+      ],
+      "persona": [
+        "CHRO",
+        "Corporate Project Head",
+        "CMO"
+      ],
+      "status": "Inactive",
+      "id": 105
     }
   ]
 }
