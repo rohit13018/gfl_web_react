@@ -3,10 +3,19 @@ import userService from '../services/userService'
 
 const FILTER_KEYS = ['business', 'company', 'location', 'plant']
 
-const INITIAL_FILTERS = FILTER_KEYS.reduce((acc, key) => ({ ...acc, [key]: '' }), {})
+// `card` tracks the selected summary card ('' | 'active' | 'inactive' | 'new')
+// and filters rows alongside the dropdown filters.
+const INITIAL_FILTERS = FILTER_KEYS.reduce((acc, key) => ({ ...acc, [key]: '' }), { card: '' })
 
-// `company` can be an array (multiselect) while every other field is a
-// plain string, so filtering/search below normalize through this helper.
+const CARD_PREDICATES = {
+  active: (user) => user.status === 'Active',
+  inactive: (user) => user.status === 'Inactive',
+  new: (user) => Boolean(user.isNew),
+}
+
+// Multiselect fields (business/company/location/plant/persona) hold arrays,
+// but older records may still be plain strings, so filtering/search below
+// normalize through this helper.
 const toValueList = (value) => (Array.isArray(value) ? value : [value])
 
 const uniqueOptions = (rows, key) =>
@@ -99,6 +108,7 @@ const useUserTable = () => {
     const term = searchTerm.trim().toLowerCase()
 
     return allUsers.filter((user) => {
+      if (filters.card && !CARD_PREDICATES[filters.card]?.(user)) return false
       const matchesFilters = FILTER_KEYS.every((key) => matchesFilter(user[key], filters[key]))
       if (!matchesFilters) return false
       if (!term) return true

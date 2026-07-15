@@ -9,7 +9,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${theme.spacing.md};
-  margin-bottom: ${theme.spacing.lg};
+  margin-bottom: 20px;
 
   ${mq('tablet')} {
     grid-template-columns: repeat(2, 1fr);
@@ -20,7 +20,7 @@ const Grid = styled.div`
   }
 `
 
-const SummaryCards = ({ summary }) => (
+const SummaryCards = ({ summary, activeCard, onCardSelect }) => (
   <Grid>
     {SUMMARY_CARDS.map((card) => (
       <SummaryCard
@@ -29,6 +29,8 @@ const SummaryCards = ({ summary }) => (
         value={summary[card.key] ?? 0}
         gradient={card.gradient}
         icon={CARD_ICONS[card.icon]}
+        isSelected={activeCard ? card.key === activeCard : card.key === 'total'}
+        onClick={() => onCardSelect(card.key)}
       />
     ))}
   </Grid>
@@ -41,6 +43,8 @@ SummaryCards.propTypes = {
     inactive: PropTypes.number,
     new: PropTypes.number,
   }).isRequired,
+  activeCard: PropTypes.string.isRequired,
+  onCardSelect: PropTypes.func.isRequired,
 }
 
 export default SummaryCards

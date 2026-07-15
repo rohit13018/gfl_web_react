@@ -19,6 +19,7 @@ const Overlay = styled.div`
 const Dialog = styled.div`
   width: 100%;
   max-width: ${(props) => props.maxWidth};
+  height: ${(props) => props.height || 'auto'};
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -44,16 +45,17 @@ const HeaderTitle = styled.h2`
 `
 
 const Body = styled.div`
+  flex: 1 1 auto;
   padding: ${theme.spacing.lg};
   overflow-y: auto;
 `
 
-const Modal = ({ open, onClose, title, children, maxWidth = '640px' }) => {
+const Modal = ({ open, onClose, title, children, maxWidth = '640px', height }) => {
   if (!open) return null
 
   return (
     <Overlay onMouseDown={onClose}>
-      <Dialog maxWidth={maxWidth} onMouseDown={(event) => event.stopPropagation()}>
+      <Dialog maxWidth={maxWidth} height={height} onMouseDown={(event) => event.stopPropagation()}>
         <HeaderBar>
           <HeaderTitle>{title}</HeaderTitle>
           <IconButton onClick={onClose} size="small" aria-label="Close" sx={{ color: '#fff' }}>
@@ -72,6 +74,7 @@ Modal.propTypes = {
   title: PropTypes.node,
   children: PropTypes.node,
   maxWidth: PropTypes.string,
+  height: PropTypes.string,
 }
 
 export default Modal

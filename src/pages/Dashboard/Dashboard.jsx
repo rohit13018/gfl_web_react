@@ -10,44 +10,48 @@ import SummaryCards from '../../components/Dashboard/SummaryCards'
 import UserTableToolbar from '../../components/Dashboard/UserTableToolbar'
 import PaginationFooter from '../../components/Dashboard/PaginationFooter'
 import SortIcon from '../../components/Dashboard/SortIcon'
+import NoRowsOverlay from '../../components/Dashboard/NoRowsOverlay'
 import UserFormModal from '../../components/Dashboard/UserFormModal'
-import DeleteUserModal from '../../components/Dashboard/DeleteUserModal'
 import { getDashboardColumns } from '../../services/dashboardColumns'
 import useUserTable from '../../hooks/useUserTable'
 import { theme, mq } from '../../styles/theme'
 import { pageBackground } from '../../styles/backgroundStyles'
 
+/* Spacing spec: 18px top (Add button to header), 95px sides on laptop+,
+   40px below the data grid. */
 const Wrapper = styled.div`
-  padding: ${theme.spacing.lg} ${theme.spacing.md};
+  flex: 1;
+  padding: 18px ${theme.spacing.md} 40px;
   background: ${theme.colors.pageBg};
   ${pageBackground}
 
   ${mq('tablet')} {
-    padding: ${theme.spacing.xl} ${theme.spacing.lg};
+    padding: 18px ${theme.spacing.lg} 40px;
   }
 
   ${mq('laptop')} {
-    padding: ${theme.spacing.xl} ${theme.spacing.lg};
+    padding: 18px 95px 40px;
   }
 `
 
 const TopBar = styled.div`
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: ${theme.spacing.sm};
-  margin-bottom: ${theme.spacing.lg};
+  margin-bottom: ${theme.spacing.md};
 `
 
 const Title = styled.h1`
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 600;
   font-size: 22px;
+  line-height: 100%;
+  letter-spacing: 0;
   color: ${theme.colors.text};
-  margin: 0;
-
-  ${mq('tablet')} {
-    font-size: 28px;
-  }
+  /* 18px wrapper top padding + 6px = 24px from the header */
+  margin: 6px 0 0;
 `
 
 const AddUserButton = styled(Button)`
@@ -77,6 +81,8 @@ const gridSlots = {
   columnSortedAscendingIcon: SortIcon,
   columnSortedDescendingIcon: SortIcon,
   columnUnsortedIcon: SortIcon,
+  noRowsOverlay: NoRowsOverlay,
+  noResultsOverlay: NoRowsOverlay,
   footer: PaginationFooter,
 }
 
@@ -85,6 +91,15 @@ const gridSx = {
   borderRadius: '8px',
   overflow: 'hidden',
   minWidth: 760,
+  // Fixed, viewport-based height: rows scroll inside the grid and the empty
+  // state keeps the same footprint instead of collapsing.
+  height: 'max(420px, calc(100vh - 360px))',
+  // scrollbarSize={0} removes the grid's own scrollbar gutter and no visible
+  // scrollbar is rendered at all — rows still scroll with the wheel/trackpad.
+  '& .MuiDataGrid-virtualScroller': {
+    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar': { display: 'none' },
+  },
   '& .MuiDataGrid-columnHeaders': {
     backgroundColor: theme.colors.tableHeader,
   },
@@ -141,17 +156,12 @@ const Dashboard = () => {
     setPaginationModel,
     addUser,
     updateUser,
-    deleteUser,
   } = useUserTable()
 
   const [modalMode, setModalMode] = useState(null) // 'create' | 'edit' | 'view' | null
   const [selectedUser, setSelectedUser] = useState(null)
   const [isSubmittingUser, setIsSubmittingUser] = useState(false)
   const [userFormError, setUserFormError] = useState('')
-
-  const [deleteTarget, setDeleteTarget] = useState(null)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [deleteError, setDeleteError] = useState('')
 
   const handleOpenAddUser = () => {
     setUserFormError('')
@@ -196,33 +206,14 @@ const Dashboard = () => {
     }
   }
 
-  const handleRequestDelete = (row) => {
-    setDeleteError('')
-    setDeleteTarget(row)
-  }
-
-  const handleCloseDelete = () => {
-    if (isDeleting) return
-    setDeleteTarget(null)
-  }
-
-  const handleConfirmDelete = async () => {
-    setIsDeleting(true)
-    setDeleteError('')
-    try {
-      await deleteUser(deleteTarget.id)
-      setDeleteTarget(null)
-    } catch {
-      setDeleteError('Unable to delete user. Please try again.')
-    } finally {
-      setIsDeleting(false)
-    }
+  const handleCardSelect = (key) => {
+    const next = key === 'total' || filters.card === key ? '' : key
+    setFilter('card', next)
   }
 
   const columns = getDashboardColumns({
     onView: handleViewUser,
     onEdit: handleEditUser,
-    onDelete: handleRequestDelete,
   })
 
   return (
@@ -235,22 +226,22 @@ const Dashboard = () => {
           </AddUserButton>
         </TopBar>
 
-        <SummaryCards summary={summary} />
+        <SummaryCards summary={summary} activeCard={filters.card} onCardSelect={handleCardSelect} />
+
+        <UserTableToolbar
+          pageSize={paginationModel.pageSize}
+          onPageSizeChange={(pageSize) =>
+            setPaginationModel((prev) => ({ ...prev, pageSize, page: 0 }))
+          }
+          filters={filters}
+          filterOptions={filterOptions}
+          onFilterChange={setFilter}
+          searchTerm={searchTerm}
+          onSearchChange={onSearchChange}
+          onClearAll={clearFilters}
+        />
 
         <TableCard>
-          <UserTableToolbar
-            pageSize={paginationModel.pageSize}
-            onPageSizeChange={(pageSize) =>
-              setPaginationModel((prev) => ({ ...prev, pageSize, page: 0 }))
-            }
-            filters={filters}
-            filterOptions={filterOptions}
-            onFilterChange={setFilter}
-            searchTerm={searchTerm}
-            onSearchChange={onSearchChange}
-            onClearAll={clearFilters}
-          />
-
           {error && <ErrorBanner>{error}</ErrorBanner>}
 
           {isLoading ? (
@@ -262,12 +253,13 @@ const Dashboard = () => {
               rows={rows}
               columns={columns}
               getRowId={(row) => row.id}
+              initialState={{ sorting: { sortModel: [{ field: 'status', sort: 'asc' }] } }}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
               pageSizeOptions={[10, 25, 50]}
               disableRowSelectionOnClick
               rowHeight={56}
-              autoHeight
+              scrollbarSize={0}
               slots={gridSlots}
               slotProps={{
                 footer: { paginationModel, onPaginationModelChange: setPaginationModel, rowCount },
@@ -287,16 +279,6 @@ const Dashboard = () => {
           filterOptions={filterOptions}
           isSubmitting={isSubmittingUser}
           error={userFormError}
-        />
-      )}
-
-      {deleteTarget && (
-        <DeleteUserModal
-          user={deleteTarget}
-          onClose={handleCloseDelete}
-          onConfirm={handleConfirmDelete}
-          isSubmitting={isDeleting}
-          error={deleteError}
         />
       )}
     </MainLayout>

@@ -5,7 +5,7 @@ import Modal from '../common/Modal/Modal'
 import Validator from '../common/Validator/Validator'
 import Button from '../common/Button/Button'
 import useValidate from '../../hooks/useValidate'
-import { theme, mq } from '../../styles/theme'
+import { theme } from '../../styles/theme'
 
 const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
@@ -14,13 +14,15 @@ const STATUS_OPTIONS = [
 
 const FIELD_NAMES = ['email', 'business', 'company', 'location', 'plant', 'persona']
 
+const MULTI_FIELDS = ['business', 'company', 'location', 'plant', 'persona']
+
 const INITIAL_FORM = {
   email: '',
-  business: '',
+  business: [],
   company: [],
-  location: '',
-  plant: '',
-  persona: '',
+  location: [],
+  plant: [],
+  persona: [],
   status: 'Active',
 }
 
@@ -32,23 +34,31 @@ const MODE_CONFIG = {
 
 const toOptions = (values = []) => values.map((value) => ({ value, label: value }))
 
+// Existing records may still hold a plain string for fields that are
+// multi-select now, so normalize everything to an array.
+const toValueList = (value) => (Array.isArray(value) ? value : value ? [value] : [])
+
 const serializeForm = (values) =>
   JSON.stringify({
     ...values,
-    company: [...values.company.map((option) => option.value)].sort(),
+    ...Object.fromEntries(
+      MULTI_FIELDS.map((field) => [
+        field,
+        values[field].map((option) => option.value).sort(),
+      ])
+    ),
   })
 
 const buildFormValues = (user) => {
   if (!user) return INITIAL_FORM
-  const companies = Array.isArray(user.company) ? user.company : user.company ? [user.company] : []
 
   return {
     email: user.email ?? '',
-    business: user.business ?? '',
-    company: toOptions(companies),
-    location: user.location ?? '',
-    plant: user.plant ?? '',
-    persona: user.persona ?? '',
+    business: toOptions(toValueList(user.business)),
+    company: toOptions(toValueList(user.company)),
+    location: toOptions(toValueList(user.location)),
+    plant: toOptions(toValueList(user.plant)),
+    persona: toOptions(toValueList(user.persona)),
     status: user.status ?? 'Active',
   }
 }
@@ -57,16 +67,13 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.md};
+  min-height: 100%;
 `
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: ${theme.spacing.md};
-
-  ${mq('tablet')} {
-    grid-template-columns: repeat(2, 1fr);
-  }
 `
 
 const ErrorBanner = styled.div`
@@ -81,6 +88,7 @@ const Actions = styled.div`
   display: flex;
   justify-content: ${(props) => (props.singleAction ? 'flex-end' : 'space-between')};
   gap: ${theme.spacing.sm};
+  margin-top: auto;
 `
 
 const SubmitButton = styled(Button)`
@@ -102,8 +110,8 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
     setFormValues((prev) => ({ ...prev, [field]: event.target.value }))
   }
 
-  const handleCompanyChange = (nextValue) => {
-    setFormValues((prev) => ({ ...prev, company: nextValue }))
+  const handleMultiChange = (field) => (nextValue) => {
+    setFormValues((prev) => ({ ...prev, [field]: nextValue }))
   }
 
   const handleSubmit = (event) => {
@@ -112,12 +120,17 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
     if (!validateAll(FIELD_NAMES)) return
     onSubmit({
       ...formValues,
-      company: formValues.company.map((option) => option.value),
+      ...Object.fromEntries(
+        MULTI_FIELDS.map((field) => [
+          field,
+          formValues[field].map((option) => option.value),
+        ])
+      ),
     })
   }
 
   return (
-    <Modal open onClose={onClose} title={title}>
+    <Modal open onClose={onClose} title={title} height="min(600px, 90vh)">
       <Form onSubmit={handleSubmit} noValidate>
         {error && <ErrorBanner>{error}</ErrorBanner>}
 
@@ -129,20 +142,20 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             placeholder="john.doe@gfl.co.in"
             name="email"
             required
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             value={formValues.email}
             onChange={handleChange('email')}
           />
           <Validator
             ref={register('business')}
-            select
+            autocomplete
             label="Business"
             name="business"
             required
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             options={toOptions(filterOptions.business)}
             value={formValues.business}
-            onChange={handleChange('business')}
+            onChange={handleMultiChange('business')}
           />
           <Validator
             ref={register('company')}
@@ -150,49 +163,49 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             label="Company"
             name="company"
             required
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             options={toOptions(filterOptions.company)}
             value={formValues.company}
-            onChange={handleCompanyChange}
+            onChange={handleMultiChange('company')}
           />
           <Validator
             ref={register('location')}
-            select
+            autocomplete
             label="Location"
             name="location"
             required
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             options={toOptions(filterOptions.location)}
             value={formValues.location}
-            onChange={handleChange('location')}
+            onChange={handleMultiChange('location')}
           />
           <Validator
             ref={register('plant')}
-            select
+            autocomplete
             label="Plant"
             name="plant"
             required
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             options={toOptions(filterOptions.plant)}
             value={formValues.plant}
-            onChange={handleChange('plant')}
+            onChange={handleMultiChange('plant')}
           />
           <Validator
             ref={register('persona')}
-            select
+            autocomplete
             label="Persona"
             name="persona"
             required
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             options={toOptions(filterOptions.persona)}
             value={formValues.persona}
-            onChange={handleChange('persona')}
+            onChange={handleMultiChange('persona')}
           />
           <Validator
             select
             label="Status"
             name="status"
-            disabled={isReadOnly}
+            readOnly={isReadOnly}
             options={STATUS_OPTIONS}
             value={formValues.status}
             onChange={handleChange('status')}
@@ -219,15 +232,17 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
   )
 }
 
+const stringOrList = PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)])
+
 UserFormModal.propTypes = {
   mode: PropTypes.oneOf(['create', 'edit', 'view']).isRequired,
   user: PropTypes.shape({
     email: PropTypes.string,
-    business: PropTypes.string,
-    company: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    location: PropTypes.string,
-    plant: PropTypes.string,
-    persona: PropTypes.string,
+    business: stringOrList,
+    company: stringOrList,
+    location: stringOrList,
+    plant: stringOrList,
+    persona: stringOrList,
     status: PropTypes.string,
   }),
   onClose: PropTypes.func.isRequired,
