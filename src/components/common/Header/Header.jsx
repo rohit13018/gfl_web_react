@@ -21,7 +21,7 @@ const Bar = styled.header`
   }
 
   ${mq('laptop')} {
-    /* Horizontal padding matches the dashboard content (95px). */
+    /* Matches dashboard content padding (95px). */
     padding: ${theme.spacing.md} 95px;
   }
 `

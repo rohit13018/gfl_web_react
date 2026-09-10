@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Validator from '../../components/common/Validator/Validator'
@@ -13,7 +13,7 @@ import inoxgflLogo from '../../assets/logos/inoxgfl.png'
 import { theme, mq } from '../../styles/theme'
 import { pageBackground } from '../../styles/backgroundStyles'
 
-const INITIAL_FORM = { email: '', password: '' }
+const INITIAL_FORM = { username: '', password: '' }
 
 const fieldSx = {
   '& .MuiOutlinedInput-root': { borderRadius: '2px' },
@@ -226,10 +226,10 @@ const Login = () => {
   const [submitError, setSubmitError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const emailRef = useRef(null)
+  const usernameRef = useRef(null)
   const passwordRef = useRef(null)
 
-  const { login } = useAuth()
+  const { login, isAuthenticated, isInitializing } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (field) => (event) => {
@@ -240,9 +240,9 @@ const Login = () => {
     event.preventDefault()
     setSubmitError('')
 
-    const isEmailValid = emailRef.current.validate()
+    const isUsernameValid = usernameRef.current.validate()
     const isPasswordValid = passwordRef.current.validate()
-    if (!isEmailValid || !isPasswordValid) return
+    if (!isUsernameValid || !isPasswordValid) return
 
     setIsSubmitting(true)
     try {
@@ -253,6 +253,11 @@ const Login = () => {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Already signed in (e.g. landed here on reload while a session was restored).
+  if (!isInitializing && isAuthenticated) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />
   }
 
   return (
@@ -268,16 +273,16 @@ const Login = () => {
 
             <FieldWrapper>
               <Validator
-                ref={emailRef}
-                type="email"
-                label="Email address"
+                ref={usernameRef}
+                type="text"
+                label="Username"
                 id="outlined-basic" 
                 variant="outlined"
-                name="email"
+                name="username"
                 required
                 autoComplete="off"
-                value={formValues.email}
-                onChange={handleChange('email')}
+                value={formValues.username}
+                onChange={handleChange('username')}
                 sx={fieldSx}
               />
             </FieldWrapper>

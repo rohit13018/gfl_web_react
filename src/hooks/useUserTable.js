@@ -3,9 +3,10 @@ import userService from '../services/userService'
 
 const FILTER_KEYS = ['business', 'company', 'location', 'plant']
 
-// `card` tracks the selected summary card ('' | 'active' | 'inactive' | 'new')
-// and filters rows alongside the dropdown filters.
+// `card` is the selected summary card ('' | 'active' | 'inactive' | 'new'), applied alongside the dropdown filters.
 const INITIAL_FILTERS = FILTER_KEYS.reduce((acc, key) => ({ ...acc, [key]: '' }), { card: '' })
+
+const EMPTY_SUMMARY = { total: 0, active: 0, inactive: 0, new: 0 }
 
 const CARD_PREDICATES = {
   active: (user) => user.status === 'Active',
@@ -13,9 +14,7 @@ const CARD_PREDICATES = {
   new: (user) => Boolean(user.isNew),
 }
 
-// Multiselect fields (business/company/location/plant/persona) hold arrays,
-// but older records may still be plain strings, so filtering/search below
-// normalize through this helper.
+// Multiselect fields hold arrays, but older records may be plain strings.
 const toValueList = (value) => (Array.isArray(value) ? value : [value])
 
 const uniqueOptions = (rows, key) =>
@@ -24,12 +23,18 @@ const uniqueOptions = (rows, key) =>
 const matchesFilter = (value, filterValue) =>
   !filterValue || toValueList(value).includes(filterValue)
 
-// Filtering/search/pagination run client-side against the full JSON Server
-// dataset for now. Swapping to server-side pagination later just means
-// replacing the `rows`/`rowCount` derivation below with a fetch keyed on
-// { searchTerm, filters, paginationModel, sortModel }.
+// Client-side search/filter/pagination over the first 50 rows (API max); move to server-side paging once rows exceed 50.
+const MAX_CLIENT_ROWS = 50
+
+const fetchTableData = () =>
+  Promise.all([
+    userService.fetchUsers({ page: 1, pageSize: MAX_CLIENT_ROWS }),
+    userService.fetchUserCountSummary(),
+  ])
+
 const useUserTable = () => {
   const [allUsers, setAllUsers] = useState([])
+  const [summary, setSummary] = useState(EMPTY_SUMMARY)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -38,44 +43,67 @@ const useUserTable = () => {
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
 
   useEffect(() => {
-    let isMounted = true
+    let active = true
 
-    const loadUsers = async () => {
-      setIsLoading(true)
-      setError('')
-      try {
-        const users = await userService.fetchUsers()
-        if (isMounted) setAllUsers(users)
-      } catch {
-        if (isMounted) setError('Unable to load users. Please try again later.')
-      } finally {
-        if (isMounted) setIsLoading(false)
-      }
-    }
+    fetchTableData()
+      .then(([{ rows }, countSummary]) => {
+        if (!active) return
+        setAllUsers(rows)
+        setSummary(countSummary)
+      })
+      .catch(() => {
+        if (active) setError('Unable to load users. Please try again later.')
+      })
+      .finally(() => {
+        if (active) setIsLoading(false)
+      })
 
-    loadUsers()
     return () => {
-      isMounted = false
+      active = false
     }
   }, [])
 
-  const addUser = useCallback(async (payload) => {
-    const created = await userService.createUser(payload)
-    setAllUsers((prev) => [created, ...prev])
-    setPaginationModel((prev) => ({ ...prev, page: 0 }))
-    return created
+  // Re-pull list + summary after a mutation so the table reflects server state.
+  const reload = useCallback(async () => {
+    setIsLoading(true)
+    setError('')
+    try {
+      const [{ rows }, countSummary] = await fetchTableData()
+      setAllUsers(rows)
+      setSummary(countSummary)
+    } catch {
+      setError('Unable to load users. Please try again later.')
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
-  const updateUser = useCallback(async (id, payload) => {
-    const updated = await userService.updateUser(id, payload)
-    setAllUsers((prev) => prev.map((existing) => (existing.id === id ? updated : existing)))
-    return updated
-  }, [])
+  const addUser = useCallback(
+    async (payload) => {
+      const created = await userService.createUser(payload)
+      await reload()
+      setPaginationModel((prev) => ({ ...prev, page: 0 }))
+      return created
+    },
+    [reload]
+  )
 
-  const deleteUser = useCallback(async (id) => {
-    await userService.deleteUser(id)
-    setAllUsers((prev) => prev.filter((existing) => existing.id !== id))
-  }, [])
+  const updateUser = useCallback(
+    async (id, payload) => {
+      const updated = await userService.updateUser(id, payload)
+      await reload()
+      return updated
+    },
+    [reload]
+  )
+
+  const deleteUser = useCallback(
+    async (id) => {
+      await userService.deleteUser(id)
+      await reload()
+    },
+    [reload]
+  )
 
   const setFilter = useCallback((key, value) => {
     setPaginationModel((prev) => ({ ...prev, page: 0 }))
@@ -119,16 +147,6 @@ const useUserTable = () => {
         .some((value) => String(value).toLowerCase().includes(term))
     })
   }, [allUsers, filters, searchTerm])
-
-  const summary = useMemo(
-    () => ({
-      total: allUsers.length,
-      active: allUsers.filter((user) => user.status === 'Active').length,
-      inactive: allUsers.filter((user) => user.status === 'Inactive').length,
-      new: allUsers.filter((user) => user.isNew).length,
-    }),
-    [allUsers]
-  )
 
   return {
     rows,

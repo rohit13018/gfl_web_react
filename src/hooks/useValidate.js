@@ -1,8 +1,6 @@
 import { useCallback, useRef } from 'react'
 
-// Pairs with the common Validator input: register(name) hands back a ref
-// callback to attach to a Validator, and validateAll() triggers every
-// registered field's imperative `validate()` in one call.
+// register(name) returns a ref callback for a Validator; validateAll() runs each field's validate().
 const useValidate = () => {
   const fieldRefs = useRef({})
 
