@@ -34,8 +34,7 @@ const MODE_CONFIG = {
 
 const toOptions = (values = []) => values.map((value) => ({ value, label: value }))
 
-// Existing records may still hold a plain string for fields that are
-// multi-select now, so normalize everything to an array.
+// Older records may hold a plain string where a multi-select array is expected.
 const toValueList = (value) => (Array.isArray(value) ? value : value ? [value] : [])
 
 const serializeForm = (values) =>
@@ -95,8 +94,7 @@ const SubmitButton = styled(Button)`
   border-radius: ${theme.radii.md};
 `
 
-// Mounted only while the modal is open (see Dashboard), so this state
-// starts fresh every time it's opened without needing a reset effect.
+// Mounted only while open, so state starts fresh each time without a reset effect.
 const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitting, error }) => {
   const [formValues, setFormValues] = useState(() => buildFormValues(user))
   const [initialFormValues] = useState(() => buildFormValues(user))

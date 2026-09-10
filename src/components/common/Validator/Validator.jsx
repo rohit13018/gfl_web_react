@@ -128,9 +128,7 @@ const Validator = forwardRef(function Validator(
 
   const displayError = errorText || (touched ? error : '')
 
-  // If a placeholder is set, keep the label floated so it doesn't overlap the
-  // placeholder text. Otherwise let the label sit inside the field like a
-  // placeholder, floating up on focus/fill (default MUI behavior).
+  // With a placeholder, keep the label floated so the two don't overlap.
   const inputLabelSlotProps = {
     ...(placeholder ? { shrink: true } : {}),
     ...slotPropsOverride?.inputLabel,

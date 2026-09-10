@@ -17,8 +17,7 @@ import useUserTable from '../../hooks/useUserTable'
 import { theme, mq } from '../../styles/theme'
 import { pageBackground } from '../../styles/backgroundStyles'
 
-/* Spacing spec: 18px top (Add button to header), 95px sides on laptop+,
-   40px below the data grid. */
+/* Spacing: 18px top, 95px sides (laptop+), 40px below the grid. */
 const Wrapper = styled.div`
   flex: 1;
   padding: 18px ${theme.spacing.md} 40px;
@@ -50,7 +49,7 @@ const Title = styled.h1`
   line-height: 100%;
   letter-spacing: 0;
   color: ${theme.colors.text};
-  /* 18px wrapper top padding + 6px = 24px from the header */
+  /* 18px wrapper padding + 6px = 24px from the header */
   margin: 6px 0 0;
 `
 
@@ -91,11 +90,9 @@ const gridSx = {
   borderRadius: '8px',
   overflow: 'hidden',
   minWidth: 760,
-  // Fixed, viewport-based height: rows scroll inside the grid and the empty
-  // state keeps the same footprint instead of collapsing.
+  // Fixed viewport-based height so rows scroll inside the grid and the empty state keeps its footprint.
   height: 'max(420px, calc(100vh - 360px))',
-  // scrollbarSize={0} removes the grid's own scrollbar gutter and no visible
-  // scrollbar is rendered at all — rows still scroll with the wheel/trackpad.
+  // Hide the grid's scrollbar; rows still scroll with wheel/trackpad.
   '& .MuiDataGrid-virtualScroller': {
     scrollbarWidth: 'none',
     '&::-webkit-scrollbar': { display: 'none' },
@@ -191,7 +188,7 @@ const Dashboard = () => {
     setUserFormError('')
     try {
       if (modalMode === 'edit') {
-        await updateUser(selectedUser.id, formValues)
+        await updateUser(selectedUser._id, formValues)
       } else {
         await addUser(formValues)
       }
@@ -252,7 +249,7 @@ const Dashboard = () => {
             <DataGrid
               rows={rows}
               columns={columns}
-              getRowId={(row) => row.id}
+              getRowId={(row) => row._id ?? row.id}
               initialState={{ sorting: { sortModel: [{ field: 'status', sort: 'asc' }] } }}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}

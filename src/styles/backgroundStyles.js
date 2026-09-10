@@ -1,8 +1,7 @@
 import { css } from '@emotion/react'
 import backgroundImg from '../assets/background.png'
 
-// Renders the shared brand background image behind content at low opacity,
-// without affecting the opacity of the content itself.
+// Brand background image behind content at low opacity, without fading the content.
 export const pageBackground = css`
   position: relative;
   isolation: isolate;
