@@ -273,7 +273,6 @@ const Dashboard = () => {
           user={selectedUser}
           onClose={handleCloseUserModal}
           onSubmit={handleSubmitUser}
-          filterOptions={filterOptions}
           isSubmitting={isSubmittingUser}
           error={userFormError}
         />

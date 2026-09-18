@@ -5,6 +5,7 @@ import Modal from '../common/Modal/Modal'
 import Validator from '../common/Validator/Validator'
 import Button from '../common/Button/Button'
 import useValidate from '../../hooks/useValidate'
+import useMasterOptions from '../../hooks/useMasterOptions'
 import { theme } from '../../styles/theme'
 
 const STATUS_OPTIONS = [
@@ -95,10 +96,11 @@ const SubmitButton = styled(Button)`
 `
 
 // Mounted only while open, so state starts fresh each time without a reset effect.
-const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitting, error }) => {
+const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) => {
   const [formValues, setFormValues] = useState(() => buildFormValues(user))
   const [initialFormValues] = useState(() => buildFormValues(user))
   const { register, validateAll } = useValidate()
+  const masterOptions = useMasterOptions()
   const isReadOnly = mode === 'view'
   const { title, submitLabel } = MODE_CONFIG[mode]
   const isUnchanged =
@@ -151,7 +153,7 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             name="business"
             required
             readOnly={isReadOnly}
-            options={toOptions(filterOptions.business)}
+            options={toOptions(masterOptions.business)}
             value={formValues.business}
             onChange={handleMultiChange('business')}
           />
@@ -162,7 +164,7 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             name="company"
             required
             readOnly={isReadOnly}
-            options={toOptions(filterOptions.company)}
+            options={toOptions(masterOptions.company)}
             value={formValues.company}
             onChange={handleMultiChange('company')}
           />
@@ -173,7 +175,7 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             name="location"
             required
             readOnly={isReadOnly}
-            options={toOptions(filterOptions.location)}
+            options={toOptions(masterOptions.location)}
             value={formValues.location}
             onChange={handleMultiChange('location')}
           />
@@ -184,7 +186,7 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             name="plant"
             required
             readOnly={isReadOnly}
-            options={toOptions(filterOptions.plant)}
+            options={toOptions(masterOptions.plant)}
             value={formValues.plant}
             onChange={handleMultiChange('plant')}
           />
@@ -195,7 +197,7 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, filterOptions, isSubmitt
             name="persona"
             required
             readOnly={isReadOnly}
-            options={toOptions(filterOptions.persona)}
+            options={toOptions(masterOptions.persona)}
             value={formValues.persona}
             onChange={handleMultiChange('persona')}
           />
@@ -245,13 +247,6 @@ UserFormModal.propTypes = {
   }),
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  filterOptions: PropTypes.shape({
-    business: PropTypes.arrayOf(PropTypes.string),
-    company: PropTypes.arrayOf(PropTypes.string),
-    location: PropTypes.arrayOf(PropTypes.string),
-    plant: PropTypes.arrayOf(PropTypes.string),
-    persona: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
   isSubmitting: PropTypes.bool,
   error: PropTypes.string,
 }

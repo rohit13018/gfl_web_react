@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import styled from '@emotion/styled'
 import { keyframes } from '@emotion/react'
@@ -31,6 +31,7 @@ const Spinner = styled.span`
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isInitializing } = useAuth()
+  const location = useLocation()
 
   if (isInitializing) {
     return (
@@ -41,7 +42,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={ROUTES.LOGIN} replace />
+    return <Navigate to={ROUTES.LOGIN} replace state={{ from: location }} />
   }
 
   return children

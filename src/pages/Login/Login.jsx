@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import styled from '@emotion/styled'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import Validator from '../../components/common/Validator/Validator'
@@ -231,6 +231,10 @@ const Login = () => {
 
   const { login, isAuthenticated, isInitializing } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const redirectTo = location.state?.from
+    ? `${location.state.from.pathname}${location.state.from.search ?? ''}`
+    : ROUTES.DASHBOARD
 
   const handleChange = (field) => (event) => {
     setFormValues((prev) => ({ ...prev, [field]: event.target.value }))
@@ -247,7 +251,7 @@ const Login = () => {
     setIsSubmitting(true)
     try {
       await login(formValues)
-      navigate(ROUTES.DASHBOARD, { replace: true })
+      navigate(redirectTo, { replace: true })
     } catch (error) {
       setSubmitError(error.message)
     } finally {
@@ -257,7 +261,7 @@ const Login = () => {
 
   // Already signed in (e.g. landed here on reload while a session was restored).
   if (!isInitializing && isAuthenticated) {
-    return <Navigate to={ROUTES.DASHBOARD} replace />
+    return <Navigate to={redirectTo} replace />
   }
 
   return (

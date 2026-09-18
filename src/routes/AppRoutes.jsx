@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from '../pages/Login/Login'
 import Dashboard from '../pages/Dashboard/Dashboard'
+import CreateMasterData from '../pages/Dummy/CreateMasterData'
 import ProtectedRoute from './ProtectedRoute'
 import { ROUTES } from '../utils/constants'
 
@@ -13,6 +14,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.DUMMY}
+        element={
+          <ProtectedRoute>
+            <CreateMasterData />
           </ProtectedRoute>
         }
       />
