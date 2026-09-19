@@ -151,7 +151,6 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
             autocomplete
             label="Business"
             name="business"
-            required
             readOnly={isReadOnly}
             options={toOptions(masterOptions.business)}
             value={formValues.business}
@@ -162,7 +161,6 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
             autocomplete
             label="Company"
             name="company"
-            required
             readOnly={isReadOnly}
             options={toOptions(masterOptions.company)}
             value={formValues.company}
@@ -173,7 +171,6 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
             autocomplete
             label="Location"
             name="location"
-            required
             readOnly={isReadOnly}
             options={toOptions(masterOptions.location)}
             value={formValues.location}
@@ -184,7 +181,6 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
             autocomplete
             label="Plant"
             name="plant"
-            required
             readOnly={isReadOnly}
             options={toOptions(masterOptions.plant)}
             value={formValues.plant}
@@ -195,7 +191,6 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
             autocomplete
             label="Persona"
             name="persona"
-            required
             readOnly={isReadOnly}
             options={toOptions(masterOptions.persona)}
             value={formValues.persona}
