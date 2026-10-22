@@ -6,7 +6,7 @@ const login = async ({ username, password }) => {
 
   try {
     // The API requires `mode` alongside the credentials.
-    response = await apiService.post('/web/admin/authenticate', {
+    response = await apiService.post('/web/cxo/authenticate', {
       username,
       password,
       mode: config.authMode,

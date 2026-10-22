@@ -73,7 +73,7 @@ const Actions = styled.div`
 `
 
 // Standalone test page (not part of the main app flow) for exercising
-// masterService.createMasterData directly against POST /web/admin/master-data.
+// masterService.createMasterData directly against POST /web/cxo/master-data.
 const CreateMasterData = () => {
   const [formValues, setFormValues] = useState(INITIAL_FORM)
   const [isSubmitting, setIsSubmitting] = useState(false)

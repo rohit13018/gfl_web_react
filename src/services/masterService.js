@@ -1,7 +1,7 @@
 import apiService from './apiService'
 
 // Web Admin Master Data endpoints. CRUD routes take the MongoDB _id.
-const BASE = '/web/admin/master-data'
+const BASE = '/web/cxo/master-data'
 
 // Builds a query string; empty values are skipped.
 const buildQuery = (params = {}) => {

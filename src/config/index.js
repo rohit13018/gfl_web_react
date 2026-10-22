@@ -6,10 +6,16 @@ const readNumber = (value, fallback) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
 }
 
+// In dev, call same-origin so the Vite proxy (vite.config.js) forwards requests and
+// sidesteps backend CORS. Set VITE_USE_DEV_PROXY=false to call the API directly.
+const useDevProxy = import.meta.env.DEV && import.meta.env.VITE_USE_DEV_PROXY !== 'false'
+
 export const config = {
-  apiBaseUrl: trimTrailingSlash(
-    import.meta.env.VITE_API_BASE_URL || 'https://8kfas3uoje.execute-api.ap-south-1.amazonaws.com'
-  ),
+  apiBaseUrl: useDevProxy
+    ? ''
+    : trimTrailingSlash(
+        import.meta.env.VITE_API_BASE_URL || 'https://8kfas3uoje.execute-api.ap-south-1.amazonaws.com'
+      ),
   authMode: import.meta.env.VITE_WEB_ADMIN_AUTH_MODE || 'admin',
   requestTimeoutMs: readNumber(import.meta.env.VITE_API_TIMEOUT_MS, 20000),
 }

@@ -1,7 +1,7 @@
 import apiService from './apiService'
 
 // Web Admin User endpoints. CRUD routes take the MongoDB _id.
-const BASE = '/web/admin/users'
+const BASE = '/web/cxo/users'
 
 // Builds a query string; array values become repeated keys, empty values are skipped.
 const buildQuery = (params = {}) => {
