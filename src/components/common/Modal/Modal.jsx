@@ -7,7 +7,7 @@ import { theme } from '../../../styles/theme'
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.2);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -24,7 +24,7 @@ const Dialog = styled.div`
   display: flex;
   flex-direction: column;
   background: ${theme.colors.surface};
-  border-radius: ${theme.radii.lg};
+  border-radius: ${theme.radii.sm};
   box-shadow: ${theme.shadow};
   overflow: hidden;
 `
@@ -33,14 +33,14 @@ const HeaderBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
+  padding: 14px ${theme.spacing.md} 14px ${theme.spacing.lg};
   background: ${theme.colors.tableHeader};
   color: #fff;
 `
 
 const HeaderTitle = styled.h2`
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
 `
 

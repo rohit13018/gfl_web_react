@@ -6,7 +6,7 @@ import Validator from '../common/Validator/Validator'
 import Button from '../common/Button/Button'
 import useValidate from '../../hooks/useValidate'
 import useMasterOptions from '../../hooks/useMasterOptions'
-import { theme } from '../../styles/theme'
+import { theme, mq } from '../../styles/theme'
 
 const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
@@ -66,14 +66,18 @@ const buildFormValues = (user) => {
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.md};
-  min-height: 100%;
+  gap: ${theme.spacing.lg};
 `
 
+/* One column on mobile, two from tablet up; minmax(0, 1fr) stops chips widening a column. */
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: ${theme.spacing.md};
+  gap: ${theme.spacing.lg} ${theme.spacing.md};
+
+  ${mq('tablet')} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 `
 
 const ErrorBanner = styled.div`
@@ -88,11 +92,23 @@ const Actions = styled.div`
   display: flex;
   justify-content: ${(props) => (props.singleAction ? 'flex-end' : 'space-between')};
   gap: ${theme.spacing.sm};
-  margin-top: auto;
+`
+
+const CancelButton = styled(Button)`
+  min-width: 148px;
+  min-height: 42px;
+  border: none;
+  border-radius: ${theme.radii.sm};
+  background: #efefef;
+  color: ${theme.colors.textMuted};
+  font-weight: 500;
 `
 
 const SubmitButton = styled(Button)`
-  border-radius: ${theme.radii.md};
+  min-width: 148px;
+  min-height: 42px;
+  border-radius: ${theme.radii.sm};
+  font-weight: 500;
 `
 
 // Mounted only while open, so state starts fresh each time without a reset effect.
@@ -130,7 +146,7 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
   }
 
   return (
-    <Modal open onClose={onClose} title={title} height="min(600px, 90vh)">
+    <Modal open onClose={onClose} title={title}>
       <Form onSubmit={handleSubmit} noValidate>
         {error && <ErrorBanner>{error}</ErrorBanner>}
 
@@ -208,9 +224,9 @@ const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) =
         </Grid>
 
         <Actions singleAction={isReadOnly}>
-          <Button type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          <CancelButton type="button" variant="secondary" onClick={onClose} disabled={isSubmitting}>
             {isReadOnly ? 'Close' : 'Cancel'}
-          </Button>
+          </CancelButton>
           {!isReadOnly && (
             <SubmitButton
               type="submit"
