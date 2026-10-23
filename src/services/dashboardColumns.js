@@ -70,6 +70,7 @@ export const getDashboardColumns = ({ onView, onEdit }) => [
     disableColumnMenu: true,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => createElement(RowActions, { row: params.row, onView, onEdit }),
+    renderCell: (params) =>
+      createElement(RowActions, { row: params.row, rowLabel: params.row.email, onView, onEdit }),
   },
 ]

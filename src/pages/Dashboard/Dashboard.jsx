@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styled from '@emotion/styled'
+import PropTypes from 'prop-types'
 import { DataGrid } from '@mui/x-data-grid'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import useAuth from '../../hooks/useAuth'
@@ -12,8 +13,12 @@ import PaginationFooter from '../../components/Dashboard/PaginationFooter'
 import SortIcon from '../../components/Dashboard/SortIcon'
 import NoRowsOverlay from '../../components/Dashboard/NoRowsOverlay'
 import UserFormModal from '../../components/Dashboard/UserFormModal'
+import MasterTableToolbar from '../../components/Dashboard/MasterTableToolbar'
+import MasterFormModal from '../../components/Dashboard/MasterFormModal'
 import { getDashboardColumns } from '../../services/dashboardColumns'
+import { getMasterColumns } from '../../services/masterColumns'
 import useUserTable from '../../hooks/useUserTable'
+import useMasterTable from '../../hooks/useMasterTable'
 import { theme, mq } from '../../styles/theme'
 import { pageBackground } from '../../styles/backgroundStyles'
 
@@ -57,6 +62,12 @@ const AddUserButton = styled(Button)`
   border-radius: ${theme.radii.md};
 `
 
+// Gradient variant for its sizing, overridden to the solid table-header blue.
+const AddMasterButton = styled(Button)`
+  border-radius: ${theme.radii.md};
+  background: ${theme.colors.tableHeader};
+`
+
 const TableCard = styled.div`
   overflow-x: auto;
 `
@@ -75,6 +86,13 @@ const LoaderWrapper = styled.div`
   justify-content: center;
   padding: ${theme.spacing.xl} 0;
 `
+
+const masterErrorMessage = (err, mode) => {
+  if (err?.status === 409) return 'A master with this category type and name already exists.'
+  return mode === 'edit'
+    ? 'Unable to update master. Please try again.'
+    : 'Unable to create master. Please try again.'
+}
 
 const gridSlots = {
   columnSortedAscendingIcon: SortIcon,
@@ -135,7 +153,25 @@ const gridSx = {
   },
 }
 
-const Dashboard = () => {
+// The masters grid sizes to its rows but never past the visible screen; beyond that
+// its rows scroll inside it so the pagination footer stays in view. The offsets are
+// the space above (header, title, toolbar) and below (page padding) the grid.
+const MasterGridFrame = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-height: max(320px, calc(100svh - 350px));
+
+  ${mq('tablet')} {
+    max-height: max(320px, calc(100svh - 240px));
+  }
+`
+
+// Five columns fit in less width than the users grid before needing to scroll sideways.
+const masterGridSx = { ...gridSx, height: 'auto', minWidth: 600 }
+
+// Serves both header nav routes, /dashboard (users) and /masters. Staying one
+// component keeps each table's loaded data and paging when switching between them.
+const Dashboard = ({ view = 'users' }) => {
   const { user } = useAuth()
   const {
     rows,
@@ -154,11 +190,17 @@ const Dashboard = () => {
     addUser,
     updateUser,
   } = useUserTable()
+  const masterTable = useMasterTable()
 
   const [modalMode, setModalMode] = useState(null) // 'create' | 'edit' | 'view' | null
   const [selectedUser, setSelectedUser] = useState(null)
   const [isSubmittingUser, setIsSubmittingUser] = useState(false)
   const [userFormError, setUserFormError] = useState('')
+
+  const [masterModalMode, setMasterModalMode] = useState(null) // 'create' | 'edit' | null
+  const [selectedMaster, setSelectedMaster] = useState(null)
+  const [isSubmittingMaster, setIsSubmittingMaster] = useState(false)
+  const [masterFormError, setMasterFormError] = useState('')
 
   const handleOpenAddUser = () => {
     setUserFormError('')
@@ -203,6 +245,42 @@ const Dashboard = () => {
     }
   }
 
+  const handleOpenAddMaster = () => {
+    setMasterFormError('')
+    setSelectedMaster(null)
+    setMasterModalMode('create')
+  }
+
+  const handleEditMaster = (row) => {
+    setMasterFormError('')
+    setSelectedMaster(row)
+    setMasterModalMode('edit')
+  }
+
+  const handleCloseMasterModal = () => {
+    if (isSubmittingMaster) return
+    setMasterModalMode(null)
+    setSelectedMaster(null)
+  }
+
+  const handleSubmitMaster = async (formValues) => {
+    setIsSubmittingMaster(true)
+    setMasterFormError('')
+    try {
+      if (masterModalMode === 'edit') {
+        await masterTable.updateMaster(selectedMaster._id, formValues)
+      } else {
+        await masterTable.addMaster(formValues)
+      }
+      setMasterModalMode(null)
+      setSelectedMaster(null)
+    } catch (err) {
+      setMasterFormError(masterErrorMessage(err, masterModalMode))
+    } finally {
+      setIsSubmittingMaster(false)
+    }
+  }
+
   const handleCardSelect = (key) => {
     const next = key === 'total' || filters.card === key ? '' : key
     setFilter('card', next)
@@ -213,58 +291,114 @@ const Dashboard = () => {
     onEdit: handleEditUser,
   })
 
+  const masterColumns = getMasterColumns({ onEdit: handleEditMaster })
+
   return (
     <MainLayout>
       <Wrapper>
         <TopBar>
           <Title>Welcome back, {user?.name?.split(' ')[0] || 'Admin'}!</Title>
-          <AddUserButton variant="gradient" onClick={handleOpenAddUser}>
-            <AddRoundedIcon fontSize="small" /> Add New User
-          </AddUserButton>
+          {view === 'users' ? (
+            <AddUserButton variant="gradient" onClick={handleOpenAddUser}>
+              <AddRoundedIcon fontSize="small" /> Add New User
+            </AddUserButton>
+          ) : (
+            <AddMasterButton variant="gradient" onClick={handleOpenAddMaster}>
+              <AddRoundedIcon fontSize="small" /> Add Master
+            </AddMasterButton>
+          )}
         </TopBar>
 
-        <SummaryCards summary={summary} activeCard={filters.card} onCardSelect={handleCardSelect} />
+        {view === 'users' ? (
+          <>
+            <SummaryCards summary={summary} activeCard={filters.card} onCardSelect={handleCardSelect} />
 
-        <UserTableToolbar
-          pageSize={paginationModel.pageSize}
-          onPageSizeChange={(pageSize) =>
-            setPaginationModel((prev) => ({ ...prev, pageSize, page: 0 }))
-          }
-          filters={filters}
-          filterOptions={filterOptions}
-          onFilterChange={setFilter}
-          searchTerm={searchTerm}
-          onSearchChange={onSearchChange}
-          onClearAll={clearFilters}
-        />
-
-        <TableCard>
-          {error && <ErrorBanner>{error}</ErrorBanner>}
-
-          {isLoading ? (
-            <LoaderWrapper>
-              <Loader />
-            </LoaderWrapper>
-          ) : (
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              getRowId={(row) => row._id ?? row.id}
-              initialState={{ sorting: { sortModel: [{ field: 'status', sort: 'asc' }] } }}
-              paginationModel={paginationModel}
-              onPaginationModelChange={setPaginationModel}
-              pageSizeOptions={[10, 25, 50]}
-              disableRowSelectionOnClick
-              rowHeight={56}
-              scrollbarSize={0}
-              slots={gridSlots}
-              slotProps={{
-                footer: { paginationModel, onPaginationModelChange: setPaginationModel, rowCount },
-              }}
-              sx={gridSx}
+            <UserTableToolbar
+              pageSize={paginationModel.pageSize}
+              onPageSizeChange={(pageSize) =>
+                setPaginationModel((prev) => ({ ...prev, pageSize, page: 0 }))
+              }
+              filters={filters}
+              filterOptions={filterOptions}
+              onFilterChange={setFilter}
+              searchTerm={searchTerm}
+              onSearchChange={onSearchChange}
+              onClearAll={clearFilters}
             />
-          )}
-        </TableCard>
+
+            <TableCard>
+              {error && <ErrorBanner>{error}</ErrorBanner>}
+
+              {isLoading ? (
+                <LoaderWrapper>
+                  <Loader />
+                </LoaderWrapper>
+              ) : (
+                <DataGrid
+                  rows={rows}
+                  columns={columns}
+                  getRowId={(row) => row._id ?? row.id}
+                  initialState={{ sorting: { sortModel: [{ field: 'status', sort: 'asc' }] } }}
+                  paginationModel={paginationModel}
+                  onPaginationModelChange={setPaginationModel}
+                  pageSizeOptions={[10, 25, 50]}
+                  disableRowSelectionOnClick
+                  rowHeight={56}
+                  scrollbarSize={0}
+                  slots={gridSlots}
+                  slotProps={{
+                    footer: { paginationModel, onPaginationModelChange: setPaginationModel, rowCount },
+                  }}
+                  sx={gridSx}
+                />
+              )}
+            </TableCard>
+          </>
+        ) : (
+          <>
+            <MasterTableToolbar
+              pageSize={masterTable.paginationModel.pageSize}
+              onPageSizeChange={(pageSize) =>
+                masterTable.setPaginationModel((prev) => ({ ...prev, pageSize, page: 0 }))
+              }
+              searchTerm={masterTable.searchTerm}
+              onSearchChange={masterTable.onSearchChange}
+            />
+
+            <TableCard>
+              {masterTable.error && <ErrorBanner>{masterTable.error}</ErrorBanner>}
+
+              {masterTable.isLoading ? (
+                <LoaderWrapper>
+                  <Loader />
+                </LoaderWrapper>
+              ) : (
+                <MasterGridFrame>
+                  <DataGrid
+                    rows={masterTable.rows}
+                    columns={masterColumns}
+                    getRowId={(row) => row._id}
+                    paginationModel={masterTable.paginationModel}
+                    onPaginationModelChange={masterTable.setPaginationModel}
+                    pageSizeOptions={[10, 25, 50]}
+                    disableRowSelectionOnClick
+                    rowHeight={56}
+                    scrollbarSize={0}
+                    slots={gridSlots}
+                    slotProps={{
+                      footer: {
+                        paginationModel: masterTable.paginationModel,
+                        onPaginationModelChange: masterTable.setPaginationModel,
+                        rowCount: masterTable.rowCount,
+                      },
+                    }}
+                    sx={masterGridSx}
+                  />
+                </MasterGridFrame>
+              )}
+            </TableCard>
+          </>
+        )}
       </Wrapper>
 
       {modalMode && (
@@ -277,8 +411,23 @@ const Dashboard = () => {
           error={userFormError}
         />
       )}
+
+      {masterModalMode && (
+        <MasterFormModal
+          mode={masterModalMode}
+          master={selectedMaster}
+          onClose={handleCloseMasterModal}
+          onSubmit={handleSubmitMaster}
+          isSubmitting={isSubmittingMaster}
+          error={masterFormError}
+        />
+      )}
     </MainLayout>
   )
+}
+
+Dashboard.propTypes = {
+  view: PropTypes.oneOf(['users', 'masters']),
 }
 
 export default Dashboard

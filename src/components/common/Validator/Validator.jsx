@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Autocomplete from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import InputAdornment from '@mui/material/InputAdornment'
 import IconButton from '@mui/material/IconButton'
@@ -35,6 +36,24 @@ const whiteFieldSx = {
 const leftAlignSelectSx = {
   '& .MuiSelect-select': { textAlign: 'left' },
   ...whiteFieldSx,
+}
+// Light grey divider between options in every dropdown list.
+const optionSeparator = '1px solid #eeeeee'
+const selectMenuProps = {
+  slotProps: {
+    list: { sx: { '& .MuiMenuItem-root:not(:last-of-type)': { borderBottom: optionSeparator } } },
+  },
+}
+// Multi-select values show as one comma-separated line (truncated) instead of chips.
+const singleLineInputRootSx = {
+  '& .MuiAutocomplete-inputRoot': { flexWrap: 'nowrap' },
+}
+const selectedTextSx = {
+  minWidth: 0,
+  pl: '5px',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
 }
 
 const PATTERNS = {
@@ -135,6 +154,15 @@ const Validator = forwardRef(function Validator(
   }
 
   if (select) {
+    // MUI renders an empty select blank; with a placeholder, show it until an option is picked.
+    const placeholderSelectProps = placeholder
+      ? {
+          displayEmpty: true,
+          renderValue: (selected) =>
+            options.find((option) => option.value === selected)?.label ?? placeholder,
+        }
+      : {}
+
     return (
       <TextField
         select
@@ -150,7 +178,11 @@ const Validator = forwardRef(function Validator(
         error={Boolean(displayError)}
         helperText={displayError || undefined}
         fullWidth
-        slotProps={{ input: { readOnly } }}
+        slotProps={{
+          input: { readOnly },
+          inputLabel: inputLabelSlotProps,
+          select: { MenuProps: selectMenuProps, ...placeholderSelectProps },
+        }}
         sx={{ ...leftAlignSelectSx, ...sxOverride }}
         {...props}
       >
@@ -178,11 +210,20 @@ const Validator = forwardRef(function Validator(
           handleValueChange(nextValue)
         }}
         onBlur={handleBlur}
+        renderValue={(selected) => {
+          const text = selected.map((option) => option.label).join(', ')
+          return (
+            <Box component="span" title={text} sx={selectedTextSx}>
+              {text}
+            </Box>
+          )
+        }}
         slotProps={{
           listbox: {
             sx: {
               maxHeight: 300,
               overflowY: 'auto',
+              '& .MuiAutocomplete-option:not(:last-of-type)': { borderBottom: optionSeparator },
               '& .MuiAutocomplete-option[aria-selected="true"]': {
                 backgroundColor: 'transparent',
                 '&.Mui-focused': { backgroundColor: 'action.hover' },
@@ -221,7 +262,7 @@ const Validator = forwardRef(function Validator(
           />
         )}
         fullWidth
-        sx={sxOverride}
+        sx={{ ...singleLineInputRootSx, ...sxOverride }}
         {...props}
       />
     )

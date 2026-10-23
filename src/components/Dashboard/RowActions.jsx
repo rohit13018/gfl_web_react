@@ -5,8 +5,8 @@ import viewIcon from '../../assets/icons/view-icon 1.svg'
 import editIcon from '../../assets/icons/edit-icon 1.svg'
 
 const ACTIONS = [
-  { key: 'view', icon: viewIcon, label: 'View user' },
-  { key: 'edit', icon: editIcon, label: 'Edit user' },
+  { key: 'view', icon: viewIcon, label: 'View' },
+  { key: 'edit', icon: editIcon, label: 'Edit' },
 ]
 
 const Wrapper = styled.div`
@@ -18,16 +18,17 @@ const Wrapper = styled.div`
   height: 100%;
 `
 
-const RowActions = ({ row, onView, onEdit }) => {
+// Renders only the actions whose handler is passed; `rowLabel` names the row for screen readers.
+const RowActions = ({ row, rowLabel, onView, onEdit }) => {
   const handlers = { view: onView, edit: onEdit }
 
   return (
     <Wrapper>
-      {ACTIONS.map(({ key, icon, label }) => (
+      {ACTIONS.filter(({ key }) => handlers[key]).map(({ key, icon, label }) => (
         <IconButton
           key={key}
           size="small"
-          aria-label={`${label} ${row.email}`}
+          aria-label={`${label} ${rowLabel}`}
           onClick={() => handlers[key](row)}
         >
           <img src={icon} alt="" width={18} height={18} />
@@ -38,9 +39,10 @@ const RowActions = ({ row, onView, onEdit }) => {
 }
 
 RowActions.propTypes = {
-  row: PropTypes.shape({ email: PropTypes.string }).isRequired,
-  onView: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
+  row: PropTypes.object.isRequired,
+  rowLabel: PropTypes.string,
+  onView: PropTypes.func,
+  onEdit: PropTypes.func,
 }
 
 export default RowActions

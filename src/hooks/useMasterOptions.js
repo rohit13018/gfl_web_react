@@ -1,17 +1,8 @@
 import { useEffect, useState } from 'react'
-import masterService from '../services/masterService'
+import masterService, { MASTER_TYPES, getMasterName } from '../services/masterService'
 
 // Each dropdown field name doubles as the master-data `type` filter param.
-const MASTER_TYPES = ['business', 'company', 'location', 'plant', 'persona']
-
 const EMPTY_OPTIONS = MASTER_TYPES.reduce((acc, type) => ({ ...acc, [type]: [] }), {})
-
-// Some master-data records come back from the API with a "name " key (trailing
-// space) instead of "name" — tolerate that instead of rendering a blank option.
-const getName = (item) => {
-  const key = Object.keys(item).find((k) => k.trim() === 'name')
-  return key ? item[key] : undefined
-}
 
 // Fetches the option list for every master-data type, one request per type
 // (e.g. fetchMasterData({ type: 'business' })), for use in the user form dropdowns.
@@ -29,7 +20,7 @@ const useMasterOptions = () => {
           MASTER_TYPES.reduce((acc, type, index) => {
             acc[type] = results[index]
               .filter((item) => item.isActive !== false)
-              .map(getName)
+              .map(getMasterName)
               .filter(Boolean)
             return acc
           }, {})

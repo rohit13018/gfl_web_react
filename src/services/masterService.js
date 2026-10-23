@@ -3,6 +3,20 @@ import apiService from './apiService'
 // Web Admin Master Data endpoints. CRUD routes take the MongoDB _id.
 const BASE = '/web/cxo/master-data'
 
+// The `type` enum the API accepts on create and as a list filter.
+export const MASTER_TYPES = ['business', 'company', 'location', 'plant', 'persona']
+
+// Some records come back with a "name " key (trailing space) instead of "name";
+// prefer the real key so a record renamed through the API shows its new name.
+export const getMasterName = (item) => {
+  if (item.name !== undefined) return item.name
+  const key = Object.keys(item).find((k) => k.trim() === 'name')
+  return key ? item[key] : undefined
+}
+
+// Stored types are mixed case ("Business", "business", "Material Group"); title-case for display.
+export const formatMasterType = (type = '') => type.replace(/\b\w/g, (char) => char.toUpperCase())
+
 // Builds a query string; empty values are skipped.
 const buildQuery = (params = {}) => {
   const search = new URLSearchParams()

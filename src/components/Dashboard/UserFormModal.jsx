@@ -1,12 +1,10 @@
 import { useState } from 'react'
-import styled from '@emotion/styled'
 import PropTypes from 'prop-types'
 import Modal from '../common/Modal/Modal'
 import Validator from '../common/Validator/Validator'
-import Button from '../common/Button/Button'
 import useValidate from '../../hooks/useValidate'
 import useMasterOptions from '../../hooks/useMasterOptions'
-import { theme, mq } from '../../styles/theme'
+import { Form, Grid, ErrorBanner, Actions, CancelButton, SubmitButton } from './formModalStyles'
 
 const STATUS_OPTIONS = [
   { value: 'Active', label: 'Active' },
@@ -62,54 +60,6 @@ const buildFormValues = (user) => {
     status: user.status ?? 'Active',
   }
 }
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.lg};
-`
-
-/* One column on mobile, two from tablet up; minmax(0, 1fr) stops chips widening a column. */
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: ${theme.spacing.lg} ${theme.spacing.md};
-
-  ${mq('tablet')} {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-`
-
-const ErrorBanner = styled.div`
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  border-radius: ${theme.radii.sm};
-  background: ${theme.colors.dangerBg};
-  color: ${theme.colors.danger};
-  font-size: 14px;
-`
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: ${(props) => (props.singleAction ? 'flex-end' : 'space-between')};
-  gap: ${theme.spacing.sm};
-`
-
-const CancelButton = styled(Button)`
-  min-width: 148px;
-  min-height: 42px;
-  border: none;
-  border-radius: ${theme.radii.sm};
-  background: #efefef;
-  color: ${theme.colors.textMuted};
-  font-weight: 500;
-`
-
-const SubmitButton = styled(Button)`
-  min-width: 148px;
-  min-height: 42px;
-  border-radius: ${theme.radii.sm};
-  font-weight: 500;
-`
 
 // Mounted only while open, so state starts fresh each time without a reset effect.
 const UserFormModal = ({ mode, user, onClose, onSubmit, isSubmitting, error }) => {

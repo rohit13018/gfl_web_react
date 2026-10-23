@@ -4,5 +4,5 @@ export const USER_KEY = 'user'
 export const ROUTES = {
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
-  DUMMY: '/dummy',
+  MASTERS: '/masters',
 }
