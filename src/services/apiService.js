@@ -10,8 +10,9 @@ export class ApiError extends Error {
   }
 }
 
-// swagger: POST /api/auth/refresh — { refreshToken } -> { data: { accessToken } }
-const REFRESH_ENDPOINT = '/api/auth/refresh'
+// swagger: POST /web/cxo/refresh-token — { refreshToken } -> { data: { accessToken } }
+// (not /api/auth/refresh, which is the LDAP subsystem and rejects CXO refresh tokens)
+const REFRESH_ENDPOINT = '/web/cxo/refresh-token'
 
 const buildHeaders = (customHeaders = {}) => {
   const headers = { 'Content-Type': 'application/json', ...customHeaders }

@@ -18,10 +18,16 @@ const useMasterOptions = () => {
         console.log('[useMasterOptions] raw results', MASTER_TYPES, results)
         setOptions(
           MASTER_TYPES.reduce((acc, type, index) => {
-            acc[type] = results[index]
-              .filter((item) => item.isActive !== false)
-              .map(getMasterName)
-              .filter(Boolean)
+            // De-dupe: master data can hold repeated names (e.g. two "Unit Head"
+            // personas), which would collide as dropdown keys.
+            acc[type] = [
+              ...new Set(
+                results[index]
+                  .filter((item) => item.isActive !== false)
+                  .map(getMasterName)
+                  .filter(Boolean)
+              ),
+            ]
             return acc
           }, {})
         )
