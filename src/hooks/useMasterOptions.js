@@ -15,7 +15,6 @@ const useMasterOptions = () => {
     Promise.all(MASTER_TYPES.map((type) => masterService.fetchMasterData({ type })))
       .then((results) => {
         if (!active) return
-        console.log('[useMasterOptions] raw results', MASTER_TYPES, results)
         setOptions(
           MASTER_TYPES.reduce((acc, type, index) => {
             // De-dupe: master data can hold repeated names (e.g. two "Unit Head"

@@ -34,7 +34,6 @@ const buildQuery = (params = {}) => {
 // (business, company, location, plant, persona).
 const fetchMasterData = async (params = {}) => {
   const res = await apiService.get(`${BASE}${buildQuery(params)}`)
-  console.log('[masterService] fetchMasterData', params, res)
   return Array.isArray(res?.data) ? res.data : []
 }
 
