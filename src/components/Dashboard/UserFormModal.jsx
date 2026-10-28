@@ -26,7 +26,7 @@ const INITIAL_FORM = {
 }
 
 const MODE_CONFIG = {
-  create: { title: 'Add User', submitLabel: 'Create User' },
+  create: { title: 'Add New User', submitLabel: 'Create User' },
   edit: { title: 'Update User', submitLabel: 'Update User' },
   view: { title: 'View User', submitLabel: null },
 }
