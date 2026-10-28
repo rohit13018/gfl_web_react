@@ -4,8 +4,16 @@
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', system-ui, Roboto, sans-serif;
+  font-family: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
   color-scheme: light dark;
+}
+
+/* Form controls don't inherit the page font by default. */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 #root {

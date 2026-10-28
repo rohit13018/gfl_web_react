@@ -14,7 +14,7 @@ const Bar = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.sm};
-  margin-bottom: ${theme.spacing.sm};
+  margin-bottom: 12px;
 
   ${mq('laptop')} {
     flex-direction: row;
@@ -44,6 +44,8 @@ const searchSx = { minWidth: 220, backgroundColor: theme.colors.surface }
 const ClearButton = styled(Button)`
   min-height: 40px;
   padding: 0 ${theme.spacing.md};
+  font-weight: 400;
+  color: ${theme.colors.danger};
   white-space: nowrap;
 
   &:disabled {

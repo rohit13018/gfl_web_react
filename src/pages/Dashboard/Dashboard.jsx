@@ -48,7 +48,6 @@ const TopBar = styled.div`
 `
 
 const Title = styled.h1`
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   font-weight: 600;
   font-size: 22px;
   line-height: 100%;
@@ -58,14 +57,8 @@ const Title = styled.h1`
   margin: 4px 0 0;
 `
 
-const AddUserButton = styled(Button)`
+const AddButton = styled(Button)`
   border-radius: ${theme.radii.md};
-`
-
-// Gradient variant for its sizing, overridden to the solid table-header blue.
-const AddMasterButton = styled(Button)`
-  border-radius: ${theme.radii.md};
-  background: ${theme.colors.tableHeader};
 `
 
 const TableCard = styled.div`
@@ -108,8 +101,7 @@ const gridSx = {
   borderRadius: '8px',
   overflow: 'hidden',
   minWidth: 760,
-  // Fixed viewport-based height so rows scroll inside the grid and the empty state keeps its footprint.
-  height: 'max(420px, calc(100vh - 290px))',
+  height: 'auto',
   // Hide the grid's scrollbar; rows still scroll with wheel/trackpad.
   '& .MuiDataGrid-virtualScroller': {
     scrollbarWidth: 'none',
@@ -153,21 +145,27 @@ const gridSx = {
   },
 }
 
-// The masters grid sizes to its rows but never past the visible screen; beyond that
-// its rows scroll inside it so the pagination footer stays in view. The offsets are
-// the space above (header, title, toolbar) and below (page padding) the grid.
+// Each grid sizes to its rows but never past the visible screen; beyond that its rows
+// scroll inside it so the pagination footer stays in view. The offsets are the space
+// above (header, title, cards, toolbar) and below (page padding) the grid.
+const UserGridFrame = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-height: max(420px, calc(100svh - 300px));
+`
+
 const MasterGridFrame = styled.div`
   display: flex;
   flex-direction: column;
-  max-height: max(320px, calc(100svh - 320px));
+  max-height: max(320px, calc(100svh - 330px));
 
   ${mq('tablet')} {
-    max-height: max(320px, calc(100svh - 190px));
+    max-height: max(320px, calc(100svh - 200px));
   }
 `
 
 // Five columns fit in less width than the users grid before needing to scroll sideways.
-const masterGridSx = { ...gridSx, height: 'auto', minWidth: 600 }
+const masterGridSx = { ...gridSx, minWidth: 600 }
 
 // Serves both header nav routes, /dashboard (users) and /masters. Staying one
 // component keeps each table's loaded data and paging when switching between them.
@@ -299,13 +297,13 @@ const Dashboard = ({ view = 'users' }) => {
         <TopBar>
           <Title>Welcome back, {user?.name?.split(' ')[0] || 'Admin'}!</Title>
           {view === 'users' ? (
-            <AddUserButton variant="gradient" onClick={handleOpenAddUser}>
+            <AddButton variant="gradient" onClick={handleOpenAddUser}>
               <AddRoundedIcon fontSize="small" /> Add New User
-            </AddUserButton>
+            </AddButton>
           ) : (
-            <AddMasterButton variant="gradient" onClick={handleOpenAddMaster}>
-              <AddRoundedIcon fontSize="small" /> Add Master
-            </AddMasterButton>
+            <AddButton variant="gradient" onClick={handleOpenAddMaster}>
+              <AddRoundedIcon fontSize="small" /> Add New Master
+            </AddButton>
           )}
         </TopBar>
 
@@ -334,24 +332,26 @@ const Dashboard = ({ view = 'users' }) => {
                   <Loader />
                 </LoaderWrapper>
               ) : (
-                <DataGrid
-                  rows={rows}
-                  columns={columns}
-                  getRowId={(row) => row._id ?? row.id}
-                  initialState={{ sorting: { sortModel: [{ field: 'status', sort: 'asc' }] } }}
-                  paginationModel={paginationModel}
-                  onPaginationModelChange={setPaginationModel}
-                  pageSizeOptions={[10, 25, 50]}
-                  disableRowSelectionOnClick
-                  rowHeight={44}
-                  columnHeaderHeight={44}
-                  scrollbarSize={0}
-                  slots={gridSlots}
-                  slotProps={{
-                    footer: { paginationModel, onPaginationModelChange: setPaginationModel, rowCount },
-                  }}
-                  sx={gridSx}
-                />
+                <UserGridFrame>
+                  <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    getRowId={(row) => row._id ?? row.id}
+                    initialState={{ sorting: { sortModel: [{ field: 'status', sort: 'asc' }] } }}
+                    paginationModel={paginationModel}
+                    onPaginationModelChange={setPaginationModel}
+                    pageSizeOptions={[10, 25, 50]}
+                    disableRowSelectionOnClick
+                    rowHeight={44}
+                    columnHeaderHeight={44}
+                    scrollbarSize={0}
+                    slots={gridSlots}
+                    slotProps={{
+                      footer: { paginationModel, onPaginationModelChange: setPaginationModel, rowCount },
+                    }}
+                    sx={gridSx}
+                  />
+                </UserGridFrame>
               )}
             </TableCard>
           </>

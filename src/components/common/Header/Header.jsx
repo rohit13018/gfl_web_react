@@ -92,8 +92,8 @@ const NameBlock = styled.div`
 
 const UserName = styled.span`
   font-size: 14px;
-  font-weight: 600;
-  color: ${theme.colors.text};
+  font-weight: 400;
+  color: #666666;
 
   ${mq('tablet')} {
     font-size: 15px;

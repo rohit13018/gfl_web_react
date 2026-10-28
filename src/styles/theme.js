@@ -1,4 +1,5 @@
 export const theme = {
+  fontFamily: "'Google Sans', 'Segoe UI', system-ui, sans-serif",
   colors: {
     primary: '#4f46e5',
     primaryHover: '#4338ca',

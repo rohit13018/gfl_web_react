@@ -48,6 +48,8 @@ const selectMenuProps = {
 const singleLineInputRootSx = {
   '& .MuiAutocomplete-inputRoot': { flexWrap: 'nowrap' },
 }
+// Matches the input ::placeholder size set in the MUI theme.
+const selectPlaceholderSx = { fontSize: 13 }
 const selectedTextSx = {
   minWidth: 0,
   pl: '5px',
@@ -160,7 +162,11 @@ const Validator = forwardRef(function Validator(
       ? {
           displayEmpty: true,
           renderValue: (selected) =>
-            options.find((option) => option.value === selected)?.label ?? placeholder,
+            options.find((option) => option.value === selected)?.label ?? (
+              <Box component="span" sx={selectPlaceholderSx}>
+                {placeholder}
+              </Box>
+            ),
         }
       : {}
 
@@ -241,7 +247,7 @@ const Validator = forwardRef(function Validator(
                 icon={checkboxIcon}
                 checkedIcon={checkboxCheckedIcon}
                 checked={selected}
-                sx={{ mr: 1 }}
+                sx={{ mr: 1, p: 0.25 }}
               />
               {option.label}
             </li>
