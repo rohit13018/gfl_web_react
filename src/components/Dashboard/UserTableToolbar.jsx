@@ -14,7 +14,7 @@ const Bar = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.sm};
-  margin-bottom: 10px;
+  margin-bottom: ${theme.spacing.sm};
 
   ${mq('laptop')} {
     flex-direction: row;
@@ -34,7 +34,7 @@ const ShowGroup = styled.div`
 const FilterGroup = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 10px;
   align-items: center;
 `
 

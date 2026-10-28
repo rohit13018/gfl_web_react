@@ -33,20 +33,20 @@ const HeaderBar = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px ${theme.spacing.md} 14px ${theme.spacing.lg};
+  padding: 10px ${theme.spacing.sm} 10px ${theme.spacing.md};
   background: ${theme.colors.tableHeader};
   color: #fff;
 `
 
 const HeaderTitle = styled.h2`
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
 `
 
 const Body = styled.div`
   flex: 1 1 auto;
-  padding: ${theme.spacing.lg};
+  padding: ${theme.spacing.md};
   overflow-y: auto;
 `
 

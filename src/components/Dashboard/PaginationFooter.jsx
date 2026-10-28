@@ -15,8 +15,8 @@ const Bar = styled.div`
   justify-content: space-between;
   flex-wrap: wrap;
   gap: ${theme.spacing.sm};
-  min-height: 56px;
-  padding: ${theme.spacing.md};
+  min-height: 44px;
+  padding: 6px ${theme.spacing.md};
   border-top: 1px solid ${theme.colors.border};
   background: ${theme.colors.surface};
   font-size: 14px;

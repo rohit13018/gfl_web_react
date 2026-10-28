@@ -10,8 +10,8 @@ const StyledButton = styled('button', {
   align-items: center;
   justify-content: center;
   gap: ${theme.spacing.xs};
-  min-height: 44px;
-  padding: 0 ${theme.spacing.lg};
+  min-height: 38px;
+  padding: 0 ${theme.spacing.md};
   border-radius: ${(props) => (props.variant === 'gradient' ? theme.radii.md : theme.radii.sm)};
   border: 1px solid transparent;
   font-size: 15px;
@@ -32,7 +32,7 @@ const StyledButton = styled('button', {
     props.variant === 'secondary' &&
     `
       background: transparent;
-      min-height: 36px;
+      min-height: 32px;
       border-color: ${theme.colors.border};
       color: ${theme.colors.text};
     `}

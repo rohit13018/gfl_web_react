@@ -30,12 +30,12 @@ const Bar = styled.header`
   ${mq('tablet')} {
     grid-template-columns: 1fr auto 1fr;
     grid-template-areas: 'logo nav user';
-    padding: ${theme.spacing.md} ${theme.spacing.lg};
+    padding: ${theme.spacing.sm} ${theme.spacing.lg};
   }
 
   ${mq('laptop')} {
-    /* Matches dashboard content padding (95px). */
-    padding: ${theme.spacing.md} 95px;
+    /* Matches dashboard content padding (30px). */
+    padding: ${theme.spacing.sm} 30px;
   }
 `
 

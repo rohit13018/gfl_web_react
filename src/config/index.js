@@ -11,13 +11,15 @@ const readNumber = (value, fallback) => {
 const useDevProxy = import.meta.env.DEV && import.meta.env.VITE_USE_DEV_PROXY !== 'false'
 
 export const config = {
-  apiBaseUrl: useDevProxy
-    ? ''
-    : trimTrailingSlash(
-        import.meta.env.VITE_API_BASE_URL || 'https://8kfas3uoje.execute-api.ap-south-1.amazonaws.com'
-      ),
+  apiBaseUrl: trimTrailingSlash(
+    import.meta.env.VITE_API_BASE_URL ||
+      'https://8kfas3uoje.execute-api.ap-south-1.amazonaws.com'
+  ),
   authMode: import.meta.env.VITE_WEB_ADMIN_AUTH_MODE || 'admin',
-  requestTimeoutMs: readNumber(import.meta.env.VITE_API_TIMEOUT_MS, 20000),
-}
+  requestTimeoutMs: readNumber(
+    import.meta.env.VITE_API_TIMEOUT_MS,
+    20000
+  ),
+};
 
-export default config
+export default config;

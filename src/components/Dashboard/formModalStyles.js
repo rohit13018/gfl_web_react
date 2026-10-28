@@ -7,14 +7,14 @@ import { theme, mq } from '../../styles/theme'
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.lg};
+  gap: ${theme.spacing.md};
 `
 
 /* One column on mobile, two from tablet up; minmax(0, 1fr) stops chips widening a column. */
 export const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: ${theme.spacing.lg} ${theme.spacing.md};
+  gap: ${theme.spacing.md};
 
   ${mq('tablet')} {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -37,7 +37,7 @@ export const Actions = styled.div`
 
 export const CancelButton = styled(Button)`
   min-width: 148px;
-  min-height: 42px;
+  min-height: 38px;
   border: none;
   border-radius: ${theme.radii.sm};
   background: #efefef;
@@ -47,7 +47,7 @@ export const CancelButton = styled(Button)`
 
 export const SubmitButton = styled(Button)`
   min-width: 148px;
-  min-height: 42px;
+  min-height: 38px;
   border-radius: ${theme.radii.sm};
   font-weight: 500;
 `

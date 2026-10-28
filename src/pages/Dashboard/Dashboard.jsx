@@ -22,19 +22,19 @@ import useMasterTable from '../../hooks/useMasterTable'
 import { theme, mq } from '../../styles/theme'
 import { pageBackground } from '../../styles/backgroundStyles'
 
-/* Spacing: 18px top, 95px sides (laptop+), 40px below the grid. */
+/* Spacing: 12px top, 30px sides (laptop+), 24px below the grid. */
 const Wrapper = styled.div`
   flex: 1;
-  padding: 18px ${theme.spacing.md} 40px;
+  padding: 12px ${theme.spacing.md} ${theme.spacing.lg};
   background: ${theme.colors.pageBg};
   ${pageBackground}
 
   ${mq('tablet')} {
-    padding: 18px ${theme.spacing.lg} 40px;
+    padding: 12px ${theme.spacing.lg} ${theme.spacing.lg};
   }
 
   ${mq('laptop')} {
-    padding: 18px 95px 40px;
+    padding: 12px 30px ${theme.spacing.lg};
   }
 `
 
@@ -44,7 +44,7 @@ const TopBar = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: ${theme.spacing.sm};
-  margin-bottom: ${theme.spacing.md};
+  margin-bottom: 12px;
 `
 
 const Title = styled.h1`
@@ -54,8 +54,8 @@ const Title = styled.h1`
   line-height: 100%;
   letter-spacing: 0;
   color: ${theme.colors.text};
-  /* 18px wrapper padding + 6px = 24px from the header */
-  margin: 6px 0 0;
+  /* 12px wrapper padding + 4px = 16px from the header */
+  margin: 4px 0 0;
 `
 
 const AddUserButton = styled(Button)`
@@ -73,18 +73,18 @@ const TableCard = styled.div`
 `
 
 const ErrorBanner = styled.div`
-  padding: ${theme.spacing.md};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
   border-radius: ${theme.radii.sm};
   background: ${theme.colors.dangerBg};
   color: ${theme.colors.danger};
   font-size: 14px;
-  margin-bottom: ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.sm};
 `
 
 const LoaderWrapper = styled.div`
   display: flex;
   justify-content: center;
-  padding: ${theme.spacing.xl} 0;
+  padding: ${theme.spacing.lg} 0;
 `
 
 const masterErrorMessage = (err, mode) => {
@@ -109,7 +109,7 @@ const gridSx = {
   overflow: 'hidden',
   minWidth: 760,
   // Fixed viewport-based height so rows scroll inside the grid and the empty state keeps its footprint.
-  height: 'max(420px, calc(100vh - 360px))',
+  height: 'max(420px, calc(100vh - 290px))',
   // Hide the grid's scrollbar; rows still scroll with wheel/trackpad.
   '& .MuiDataGrid-virtualScroller': {
     scrollbarWidth: 'none',
@@ -159,10 +159,10 @@ const gridSx = {
 const MasterGridFrame = styled.div`
   display: flex;
   flex-direction: column;
-  max-height: max(320px, calc(100svh - 350px));
+  max-height: max(320px, calc(100svh - 320px));
 
   ${mq('tablet')} {
-    max-height: max(320px, calc(100svh - 240px));
+    max-height: max(320px, calc(100svh - 190px));
   }
 `
 
@@ -343,7 +343,8 @@ const Dashboard = ({ view = 'users' }) => {
                   onPaginationModelChange={setPaginationModel}
                   pageSizeOptions={[10, 25, 50]}
                   disableRowSelectionOnClick
-                  rowHeight={56}
+                  rowHeight={44}
+                  columnHeaderHeight={44}
                   scrollbarSize={0}
                   slots={gridSlots}
                   slotProps={{
@@ -382,7 +383,8 @@ const Dashboard = ({ view = 'users' }) => {
                     onPaginationModelChange={masterTable.setPaginationModel}
                     pageSizeOptions={[10, 25, 50]}
                     disableRowSelectionOnClick
-                    rowHeight={56}
+                    rowHeight={44}
+                    columnHeaderHeight={44}
                     scrollbarSize={0}
                     slots={gridSlots}
                     slotProps={{

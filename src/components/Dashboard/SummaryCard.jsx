@@ -13,7 +13,7 @@ const Card = styled.button`
   cursor: pointer;
   border-radius: ${theme.radii.md};
   padding: ${theme.spacing.sm} ${theme.spacing.md};
-  min-height: 78px;
+  min-height: 64px;
   color: #fff;
   background: ${(props) => props.gradient};
   box-shadow: ${(props) =>
@@ -36,8 +36,8 @@ const Card = styled.button`
   }
 
   ${mq('tablet')} {
-    padding: ${theme.spacing.md};
-    min-height: 92px;
+    padding: 12px ${theme.spacing.md};
+    min-height: 76px;
   }
 `
 

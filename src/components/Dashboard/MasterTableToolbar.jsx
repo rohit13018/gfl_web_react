@@ -12,7 +12,7 @@ const Bar = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.sm};
-  margin-bottom: 10px;
+  margin-bottom: ${theme.spacing.sm};
 
   ${mq('tablet')} {
     flex-direction: row;

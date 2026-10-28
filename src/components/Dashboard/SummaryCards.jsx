@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 import SummaryCard from './SummaryCard'
 import { SUMMARY_CARDS } from './summaryCardsConfig'
 import { CARD_ICONS } from './cardIcons'
-import { theme, mq } from '../../styles/theme'
+import { mq } from '../../styles/theme'
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  gap: ${theme.spacing.md};
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
 
   ${mq('tablet')} {
     grid-template-columns: repeat(2, 1fr);

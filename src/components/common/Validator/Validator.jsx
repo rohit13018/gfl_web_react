@@ -110,6 +110,7 @@ const Validator = forwardRef(function Validator(
     validatePattern = true,
     validateOnChange = false,
     onErrorChange,
+    size = 'small',
     slotProps: slotPropsOverride,
     sx: sxOverride,
     ...props
@@ -166,6 +167,7 @@ const Validator = forwardRef(function Validator(
     return (
       <TextField
         select
+        size={size}
         name={name}
         label={label}
         required={required}
@@ -262,6 +264,7 @@ const Validator = forwardRef(function Validator(
           />
         )}
         fullWidth
+        size={size}
         sx={{ ...singleLineInputRootSx, ...sxOverride }}
         {...props}
       />
@@ -272,6 +275,7 @@ const Validator = forwardRef(function Validator(
     return (
       <NumberField
         id={name}
+        size={size}
         name={name}
         label={label}
         required={required}
@@ -295,6 +299,7 @@ const Validator = forwardRef(function Validator(
     return (
       <TextField
         type={passwordVisible ? 'text' : 'password'}
+        size={size}
         name={name}
         label={label}
         placeholder={placeholder}
@@ -343,6 +348,7 @@ const Validator = forwardRef(function Validator(
   return (
     <TextField
       type={htmlType}
+      size={size}
       name={name}
       label={label}
       placeholder={placeholder}
@@ -392,6 +398,7 @@ Validator.propTypes = {
   validatePattern: PropTypes.bool,
   validateOnChange: PropTypes.bool,
   onErrorChange: PropTypes.func,
+  size: PropTypes.oneOf(['small', 'medium']),
 }
 
 export default Validator
